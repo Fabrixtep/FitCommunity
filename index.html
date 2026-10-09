@@ -146,6 +146,24 @@ ul.ingl{margin:0;padding-left:18px;display:grid;gap:3px}
 .mbar{display:grid;grid-template-columns:104px 1fr auto;gap:8px;align-items:center;font-size:.85rem}
 .mbar .track{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
 .mbar i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.chips.wrap{flex-wrap:wrap;overflow:visible;padding-block:6px}
+a.chip{text-decoration:none;color:var(--fg)}
+.chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.chk{display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--muted)}
+.chk input{width:18px;height:18px;accent-color:var(--accent)}
+.have{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;font-size:.85rem}
+.have .track{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.have i{display:block;height:100%;background:var(--lv1);border-radius:99px}
+.stl{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.stl li{display:grid;grid-template-columns:22px 1fr auto;gap:8px;align-items:center;font-size:.95rem}
+.stl .ic{font-family:var(--mono);font-weight:700;text-align:center}
+.stl .ok{color:var(--lv1)} .stl .sb{color:var(--lv2)} .stl .no{color:var(--accent)}
+.tbl{overflow-x:auto}
+.tbl table{width:100%;border-collapse:collapse;font-size:.85rem}
+.tbl th{text-align:left;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--line)}
+.tbl td{padding:8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.tbl td.num{font-family:var(--mono);text-align:right}
+.tbl tr.best td{font-weight:600}
 .guestbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 12px;margin-bottom:14px;border-radius:8px;background:var(--sunk);font-size:.88rem;color:var(--muted)}
 .guestbar b{color:var(--fg)}
 .guestbar.warn{border-left:3px solid var(--accent)}
@@ -227,7 +245,8 @@ const S = {
   ejercicios:[], publicas:{}, privadas:{}, favs:[], draft:null, editing:null, confirmDel:null,
   dias:{}, fecha:null, diaSeg:"hoy", log:null, rango:90, ejProg:null, pickFor:"rutina", wq:Promise.resolve(),
   guest:false, guestOk:true, g:null,
-  dietasIdx:{}, planesPriv:{}, planesPubMine:{}, planCache:{}, dietSeg:"mias", crearSeg:"rutina", dDraft:null, dEditing:null, pickIngFor:0
+  dietasIdx:{}, planesPriv:{}, planesPubMine:{}, planCache:{}, dietSeg:"mias", crearSeg:"rutina", dDraft:null, dEditing:null, pickIngFor:0,
+  have:[], basicos:true, filt:[], mom:"todos", preciosCom:[]
 };
 const hoyStr = () => new Date().toLocaleDateString("sv");
 const shiftDate = (f, n) => { const d = new Date(f + "T12:00:00"); d.setDate(d.getDate() + n); return d.toLocaleDateString("sv"); };
@@ -249,7 +268,7 @@ function enterGuest(){
   S.guest = true; S.uid = S.uid || "local";
   const g = G.load();
   if (g === null) S.guestOk = false;
-  S.g = {rutinas:g?.rutinas || {}, favs:g?.favs || [], dias:g?.dias || {}, planes:g?.planes || {}};
+  S.g = {rutinas:g?.rutinas || {}, favs:g?.favs || [], dias:g?.dias || {}, planes:g?.planes || {}, precios:g?.precios || {}};
   applyGuest();
 }
 function applyGuest(){
@@ -260,7 +279,7 @@ function persistGuest(){ if (!G.save(S.g)) S.guestOk = false; applyGuest(); }
 function datosExport(){
   const rutinas = Object.values(allRutinas()).filter(r => r.autor === S.uid).map(({autor, ...r}) => r);
   return {app:"FIT Community", formato:1, exportado:new Date().toISOString(), modo:S.guest ? "invitado" : "cuenta",
-    rutinas, dietas:Object.entries({...S.planesPriv, ...S.planesPubMine}).map(([id, pl]) => ({id, publica:!!S.planesPubMine[id], ...pl})), favoritas:S.favs, dias:Object.values(S.dias).sort((a,b) => a.fecha < b.fecha ? -1 : 1)};
+    rutinas, precios:misPrecios(), dietas:Object.entries({...S.planesPriv, ...S.planesPubMine}).map(([id, pl]) => ({id, publica:!!S.planesPubMine[id], ...pl})), favoritas:S.favs, dias:Object.values(S.dias).sort((a,b) => a.fecha < b.fecha ? -1 : 1)};
 }
 async function exportar(){
   const txt = JSON.stringify(datosExport(), null, 2);
@@ -325,6 +344,10 @@ async function boot(){
     db.collection("dietas").onSnapshot(snap => {
       const out = {}; snap.docs.forEach(d => out[d.id] = d.data().planes || {});
       S.dietasIdx = out; resolveNames(); render(true);
+    });
+    db.collection("precios").onSnapshot(snap => {
+      const out = []; snap.docs.forEach(d => Object.entries(d.data().items || {}).forEach(([id, e]) => out.push({...e, id, autor:d.id})));
+      S.preciosCom = out; render(true);
     });
   } else { S.ejercicios = BIBLIOTECA_BASE.slice(); S.ready = true; }
 
@@ -491,6 +514,143 @@ function comprimirFoto(file){
     }; img.onerror = rej; img.src = fr.result; };
     fr.onerror = rej; fr.readAsDataURL(file);
   });
+}
+
+
+/* ---------- qué cocino: recetario ---------- */
+const R = (id, n, momento, min, ing, pasos) => ({id, n, momento, min, ing, pasos});
+const RECETAS = [
+  R("avena-platano","Avena con plátano y canela","Desayuno",5,[["avena",60,"g"],["leche-semi",250,"ml"],["platano",1,"ud"],["miel",1,"cdta"]],
+    ["Calienta la leche en un cazo a fuego medio.","Añade la avena y remueve 3–4 minutos hasta que espese.","Sirve con el plátano en rodajas, la miel y canela al gusto."]),
+  R("tortilla-pan","Tortilla francesa con tostada","Desayuno",10,[["huevo",2,"ud"],["pan-integral",2,"rebanada"],["tomate",1,"ud"],["aceite-oliva",1,"cdta"]],
+    ["Bate los huevos con una pizca de sal.","Cuaja la tortilla en una sartén con el aceite a fuego medio.","Tuesta el pan y ponle el tomate rallado por encima."]),
+  R("griego-frutos","Yogur griego con arándanos y nueces","Desayuno",3,[["yogur-griego-0",250,"g"],["arandanos",1,"puñado"],["nueces",15,"g"],["miel",1,"cdta"]],
+    ["Pon el yogur en un bol.","Añade los arándanos y las nueces troceadas.","Termina con la miel por encima."]),
+  R("tostada-aguacate","Tostadas de aguacate y huevo","Desayuno",12,[["pan-integral",2,"rebanada"],["aguacate",0.5,"ud"],["huevo",2,"ud"],["tomate",0.5,"ud"]],
+    ["Cuece los huevos 8 minutos o hazlos a la plancha.","Tuesta el pan y aplasta el aguacate encima con sal y pimienta.","Añade el tomate en rodajas y los huevos."]),
+  R("batido-proteico","Batido de plátano y cacahuete","Desayuno",3,[["whey",1,"cacito"],["leche-semi",300,"ml"],["platano",1,"ud"],["crema-cacahuete",1,"cda"]],
+    ["Pon todos los ingredientes en la batidora.","Bate 30 segundos hasta que quede homogéneo.","Sírvelo frío; añade hielo si quieres."]),
+  R("tortitas-avena","Tortitas de avena y claras","Desayuno",15,[["avena",50,"g"],["claras",150,"ml"],["platano",1,"ud"],["aceite-oliva",1,"cdta"]],
+    ["Tritura la avena, las claras y medio plátano.","Haz tortitas pequeñas en una sartén untada con el aceite, 2 minutos por cada lado.","Sirve con el resto del plátano en rodajas."]),
+  R("skyr-cacao","Skyr con avena, cacao y fresas","Merienda",3,[["skyr",1,"ud"],["avena",30,"g"],["cacao-puro",1,"cdta"],["fresas",100,"g"]],
+    ["Mezcla el skyr con el cacao.","Añade la avena por encima.","Termina con las fresas troceadas."]),
+  R("manzana-yogur","Manzana asada con yogur y nueces","Merienda",15,[["manzana",1,"ud"],["yogur-natural",1,"ud"],["nueces",15,"g"],["miel",1,"cdta"]],
+    ["Corta la manzana en gajos y ásala 10 minutos en el microondas o el horno con canela.","Sírvela sobre el yogur.","Añade las nueces y la miel."]),
+  R("tostada-cacahuete","Tostadas de cacahuete y plátano","Merienda",5,[["pan-integral",2,"rebanada"],["crema-cacahuete",1,"cda"],["platano",1,"ud"]],
+    ["Tuesta el pan.","Unta la crema de cacahuete.","Coloca el plátano en rodajas por encima."]),
+  R("hummus-crudites","Hummus con crudités","Merienda",8,[["hummus",4,"cda"],["zanahoria",1,"ud"],["pimiento",0.5,"ud"],["pan-integral",1,"rebanada"]],
+    ["Corta la zanahoria y el pimiento en bastones.","Sirve el hummus en un bol.","Acompaña con los bastones y el pan tostado."]),
+  R("tostada-jamon","Tostada de queso fresco y jamón","Merienda",5,[["pan-integral",2,"rebanada"],["queso-fresco",60,"g"],["jamon-serrano",2,"loncha"],["tomate",0.5,"ud"]],
+    ["Tuesta el pan y ponle el tomate rallado.","Añade el queso fresco en lonchas.","Termina con el jamón."]),
+  R("pollo-boniato","Pollo al horno con boniato","Comida",35,[["pollo",200,"g"],["boniato",1,"ud"],["pimiento",0.5,"ud"],["aceite-oliva",1,"cda"]],
+    ["Precalienta el horno a 200 °C.","Corta el boniato y el pimiento en trozos y alíñalos con la mitad del aceite, sal y pimentón.","Hornea 15 minutos, añade el pollo con el resto del aceite y hornea 15–20 minutos más."]),
+  R("arroz-pollo","Arroz con pollo y verduras","Comida",25,[["arroz-blanco",80,"g"],["pollo",150,"g"],["pimiento",0.5,"ud"],["calabacin",0.5,"ud"],["cebolla",0.5,"ud"],["aceite-oliva",1,"cda"]],
+    ["Cuece el arroz según el paquete.","Sofríe la cebolla, el pimiento y el calabacín picados con el aceite.","Añade el pollo en dados, dóralo y mézclalo con el arroz."]),
+  R("pasta-atun","Pasta con atún y tomate","Comida",15,[["pasta",80,"g"],["atun-lata",2,"ud"],["tomate",2,"ud"],["cebolla",0.5,"ud"],["aceite-oliva",1,"cdta"]],
+    ["Cuece la pasta en agua con sal.","Sofríe la cebolla con el aceite y añade el tomate picado 8 minutos.","Mezcla la salsa con el atún escurrido y la pasta."]),
+  R("lentejas","Lentejas estofadas con verduras","Comida",40,[["lentejas",80,"g"],["zanahoria",1,"ud"],["cebolla",0.5,"ud"],["pimiento",0.5,"ud"],["patata",0.5,"ud"],["aceite-oliva",1,"cda"]],
+    ["Sofríe la cebolla y el pimiento picados con el aceite.","Añade la zanahoria y la patata en trozos, las lentejas, pimentón y agua que las cubra.","Cuece a fuego medio unos 30 minutos, hasta que estén tiernas."]),
+  R("ensalada-garbanzos","Ensalada de garbanzos y atún","Comida",10,[["garbanzos-cocidos",200,"g"],["tomate",1,"ud"],["pimiento",0.5,"ud"],["cebolla",0.25,"ud"],["atun-lata",1,"ud"],["aceite-oliva",1,"cda"]],
+    ["Lava y escurre los garbanzos.","Pica el tomate, el pimiento y la cebolla.","Mézclalo todo con el atún y aliña con el aceite, sal y vinagre."]),
+  R("salmon-patata","Salmón con patata y brócoli","Cena",25,[["salmon",150,"g"],["patata",1,"ud"],["brocoli",150,"g"],["aceite-oliva",1,"cdta"]],
+    ["Cuece la patata en trozos 15 minutos y el brócoli los últimos 5.","Haz el salmón a la plancha 3–4 minutos por cada lado.","Sirve con un hilo de aceite y sal."]),
+  R("merluza-verduras","Merluza a la plancha con verduras","Cena",20,[["merluza",200,"g"],["calabacin",1,"ud"],["zanahoria",1,"ud"],["aceite-oliva",1,"cda"]],
+    ["Corta el calabacín y la zanahoria en tiras.","Saltéalos 6–8 minutos con la mitad del aceite.","Haz la merluza a la plancha con el resto del aceite, 3 minutos por cada lado."]),
+  R("ternera-arroz","Ternera salteada con arroz","Comida",25,[["ternera",150,"g"],["arroz-blanco",70,"g"],["pimiento",1,"ud"],["cebolla",0.5,"ud"],["champinones",100,"g"],["aceite-oliva",1,"cda"]],
+    ["Cuece el arroz.","Saltea la cebolla, el pimiento y los champiñones con el aceite a fuego fuerte.","Añade la ternera en tiras 3–4 minutos y sirve con el arroz."]),
+  R("wrap-pavo","Wrap de pavo y queso fresco","Cena",8,[["tortilla-trigo",2,"ud"],["pavo",120,"g"],["lechuga",50,"g"],["tomate",1,"ud"],["queso-fresco",40,"g"]],
+    ["Haz el pavo a la plancha y córtalo en tiras.","Rellena las tortillas con la lechuga, el tomate, el queso y el pavo.","Enróllalas y calienta 1 minuto en la sartén."]),
+  R("quinoa-tofu","Quinoa con tofu y verduras","Comida",25,[["quinoa",70,"g"],["tofu",150,"g"],["brocoli",100,"g"],["pimiento",0.5,"ud"],["aceite-oliva",1,"cda"]],
+    ["Lava la quinoa y cuécela 15 minutos.","Dora el tofu en dados con la mitad del aceite.","Saltea el brócoli y el pimiento y mézclalo todo con salsa de soja si quieres."]),
+  R("revuelto-espinacas","Revuelto de espinacas y champiñones","Cena",10,[["huevo",3,"ud"],["espinacas",100,"g"],["champinones",100,"g"],["pan-integral",1,"rebanada"],["aceite-oliva",1,"cdta"]],
+    ["Saltea los champiñones laminados con el aceite.","Añade las espinacas hasta que reduzcan.","Incorpora los huevos batidos y remueve hasta que cuajen. Sirve con el pan."]),
+  R("hamburguesa-patata","Hamburguesa casera con patata asada","Cena",30,[["carne-picada",150,"g"],["patata",1,"ud"],["lechuga",60,"g"],["tomate",1,"ud"],["cebolla",0.25,"ud"]],
+    ["Asa la patata en el microondas 8 minutos o en el horno 25.","Forma la hamburguesa con la carne y sal, y hazla a la plancha 4 minutos por cada lado.","Sirve con ensalada de lechuga, tomate y cebolla."]),
+  R("gambas-arroz","Gambas al ajillo con arroz integral","Comida",30,[["gambas",200,"g"],["arroz-integral",70,"g"],["aceite-oliva",1,"cda"]],
+    ["Cuece el arroz integral unos 25 minutos.","Dora un diente de ajo laminado y una guindilla en el aceite.","Añade las gambas 2 minutos y sírvelas sobre el arroz."]),
+  R("crema-calabacin","Crema de calabacín","Cena",25,[["calabacin",2,"ud"],["patata",0.5,"ud"],["cebolla",0.5,"ud"],["queso-batido",2,"cda"],["aceite-oliva",1,"cda"]],
+    ["Pocha la cebolla con el aceite.","Añade el calabacín y la patata en trozos, cubre con agua y cuece 15 minutos.","Tritura con el queso batido y ajusta de sal."]),
+  R("bowl-pollo","Bowl de pollo, arroz y aguacate","Comida",15,[["arroz-cocido",200,"g"],["pollo",150,"g"],["aguacate",0.5,"ud"],["tomate",1,"ud"],["aceite-oliva",1,"cdta"]],
+    ["Haz el pollo a la plancha con sal y especias.","Calienta el arroz.","Monta el bol con el arroz, el pollo, el aguacate y el tomate en dados."]),
+  R("patata-atun","Patata rellena de atún","Cena",15,[["patata",1,"ud"],["atun-lata",1,"ud"],["queso-batido",2,"cda"],["cebolla",0.25,"ud"]],
+    ["Asa la patata en el microondas 8–10 minutos.","Mezcla el atún, el queso batido y la cebolla picada.","Abre la patata y rellénala con la mezcla."]),
+  R("garbanzos-espinacas","Garbanzos con espinacas y huevo","Cena",15,[["garbanzos-cocidos",200,"g"],["espinacas",100,"g"],["huevo",1,"ud"],["aceite-oliva",1,"cda"]],
+    ["Saltea las espinacas con el aceite y comino.","Añade los garbanzos escurridos 5 minutos.","Sirve con un huevo a la plancha encima."])
+];
+const BASICOS = ["aceite-oliva"];
+const GRUPOS_SUST = [
+  ["pollo","pavo","ternera","merluza","atun-lata","salmon","gambas","tofu"],
+  ["arroz-blanco","arroz-integral","quinoa","pasta"],
+  ["arroz-cocido","pasta-cocida"],
+  ["patata","boniato"],
+  ["yogur-griego-0","skyr","queso-batido","yogur-natural"],
+  ["leche-entera","leche-semi","leche-desnatada","bebida-avena"],
+  ["almendras","nueces","crema-cacahuete"],
+  ["platano","manzana","fresas","arandanos","naranja"],
+  ["brocoli","calabacin","espinacas","pimiento","champinones","zanahoria"],
+  ["pan-blanco","pan-integral","tortilla-trigo"],
+  ["lentejas-cocidas","garbanzos-cocidos"],
+  ["queso-fresco","queso-curado"]
+];
+const CARNE_PESCADO = new Set(["pollo","pavo","ternera","carne-picada","salmon","merluza","atun-lata","gambas","jamon-serrano"]);
+const LACTEOS = new Set(["leche-entera","leche-semi","leche-desnatada","yogur-natural","yogur-griego-0","skyr","queso-batido","queso-fresco","queso-curado","whey","mantequilla"]);
+const FILTROS = [["veg","Vegetariana"],["sinlac","Sin lactosa"],["prot","Alta en proteína"],["rapida","Rápida (≤15 min)"]];
+const MOMS = [["todos","Todas"],["Desayuno","Desayuno"],["Comida","Comida"],["Cena","Cena"],["Merienda","Merienda"]];
+const recIngs = rc => rc.ing.map(([id, cantidad, unidad]) => ({alimentoId:id, nombre:alim(id)?.n || id, cantidad, unidad}));
+const nReceta = rc => nComida({ingredientes:recIngs(rc)});
+function tagsReceta(rc){
+  const ids = rc.ing.map(x => x[0]), n = nReceta(rc);
+  return {veg:!ids.some(i => CARNE_PESCADO.has(i)), sinlac:!ids.some(i => LACTEOS.has(i)), prot:n.p >= 25, rapida:rc.min <= 15};
+}
+function evalReceta(rc){
+  const have = new Set(S.have);
+  const items = rc.ing.map(([id, cant, u]) => {
+    if (have.has(id) || (S.basicos && BASICOS.includes(id))) return {id, cant, u, st:"ok"};
+    const g = GRUPOS_SUST.find(gr => gr.includes(id)); const sub = g && g.find(x => x !== id && have.has(x));
+    return sub ? {id, cant, u, st:"sub", sub} : {id, cant, u, st:"falta"};
+  });
+  const ok = items.filter(i => i.st === "ok").length, sub = items.filter(i => i.st === "sub").length;
+  return {items, ok, sub, falta:items.length - ok - sub, total:items.length, score:(ok + sub * .75) / items.length};
+}
+function guardarDespensa(){ try { localStorage.setItem("fc_despensa", JSON.stringify({have:S.have, basicos:S.basicos, filt:S.filt, mom:S.mom})); } catch {} }
+try { const dz = JSON.parse(localStorage.getItem("fc_despensa") || "null"); if (dz){ S.have = (dz.have || []).filter(alim); S.basicos = dz.basicos !== false; S.filt = dz.filt || []; S.mom = dz.mom || "todos"; } } catch {}
+
+/* ---------- dónde comprar y precios ---------- */
+const TIENDAS = [
+  {id:"mercadona", n:"Mercadona", url:q => `https://tienda.mercadona.es/search-results?query=${q}`},
+  {id:"carrefour", n:"Carrefour", url:q => `https://www.carrefour.es/?q=${q}`},
+  {id:"dia", n:"Dia", url:q => `https://www.dia.es/search?q=${q}`},
+  {id:"lidl", n:"Lidl", url:q => `https://www.lidl.es/q/search?q=${q}`},
+  {id:"alcampo", n:"Alcampo", url:q => `https://www.compraonline.alcampo.es/search?q=${q}`},
+  {id:"otra", n:"Otra tienda", url:null}
+];
+const tiendaN = id => TIENDAS.find(t => t.id === id)?.n || "Otra tienda";
+const fmtEur = n => n.toLocaleString("es-ES", {minimumFractionDigits:2, maximumFractionDigits:2});
+const busqueda = a => encodeURIComponent(a.n.replace(/\s*\(.*?\)\s*/g, " ").trim());
+function misPrecios(){ return S.guest ? Object.entries(S.g?.precios || {}).map(([id, e]) => ({...e, id, autor:S.uid})) : S.preciosCom.filter(e => e.autor === S.uid); }
+function todosPrecios(){ return S.guest ? [...S.preciosCom, ...misPrecios()] : S.preciosCom; }
+function statsPrecio(alimId){
+  const a = alim(alimId), desde = shiftDate(hoyStr(), -180);
+  const es = todosPrecios().filter(e => e.alimentoId === alimId && (e.fecha || "") >= desde && num(e.precio) > 0 && num(e.cantidad) > 0)
+    .map(e => ({...e, kg:e.precio / e.cantidad * 1000, prot:a && a.p >= 1 ? e.precio / (e.cantidad * a.p / 100) * 100 : null}));
+  const porT = {};
+  es.forEach(e => { const t = porT[e.tienda] ||= {tienda:e.tienda, kg:Infinity, prot:null, n:0, ultima:""}; t.kg = Math.min(t.kg, e.kg); if (e.prot != null) t.prot = Math.min(t.prot ?? Infinity, e.prot); t.n++; if (e.fecha > t.ultima) t.ultima = e.fecha; });
+  const filas = Object.values(porT).sort((x, y) => x.kg - y.kg);
+  return {filas, mejor:filas[0] || null, n:es.length};
+}
+function costeReceta(rc){
+  let total = 0, con = 0;
+  recIngs(rc).forEach(i => { const st = statsPrecio(i.alimentoId); if (st.mejor){ total += gramosIng(i) / 1000 * st.mejor.kg; con++; } });
+  return {total, con, de:rc.ing.length};
+}
+async function guardarPrecio(e){
+  const id = uidGen();
+  if (S.guest){ S.g.precios = {...(S.g.precios || {}), [id]: e}; persistGuest(); return; }
+  const mine = {}; S.preciosCom.filter(x => x.autor === S.uid).forEach(({id:i, autor, ...rest}) => mine[i] = rest);
+  mine[id] = e;
+  const ids = Object.keys(mine).sort((x, y) => (mine[y].fecha || "").localeCompare(mine[x].fecha || "")).slice(0, 300);
+  const keep = {}; ids.forEach(i => keep[i] = mine[i]);
+  await S.db.doc(`precios/${S.uid}`).set({items:keep});
 }
 
 /* ---------- diario: datos ---------- */
@@ -692,8 +852,9 @@ function refreshSummary(){ const s = $("#summary"); if (s) s.innerHTML = summary
 /* ---------- dietas: vistas ---------- */
 function vDietas(){
   const seg = `<div class="sect-h"><h2>Dietas</h2></div><div class="seg" role="group" aria-label="Filtrar dietas">
-    ${[["mias","Mis dietas"],["comunidad","Comunidad"],["favs","Favoritas"]].map(([k,l]) => `<button data-pseg="${k}" aria-pressed="${S.dietSeg===k}">${l}</button>`).join("")}</div>`;
+    ${[["mias","Mías"],["comunidad","Comunidad"],["favs","Favoritas"],["cocinar","Qué cocino"]].map(([k,l]) => `<button data-pseg="${k}" aria-pressed="${S.dietSeg===k}">${l}</button>`).join("")}</div>`;
   if (!S.ready) return seg + notReady();
+  if (S.dietSeg === "cocinar") return seg + vCocinar();
   const all = Object.values(allPlanes()).sort((a,b) => (b.actualizada||0) - (a.actualizada||0));
   let list, empty;
   if (S.dietSeg === "mias"){ list = all.filter(r => r.autor === S.uid); empty = `<strong>Aún no tienes dietas</strong>Crea un plan con sus comidas, ingredientes y preparación. Las calorías y macros se calculan solas.${canSave()?`<button class="btn pri" data-newdiet>Crear dieta</button>`:""}`; }
@@ -836,8 +997,98 @@ function ingPicker(){
 function ingList(q){
   const nq = normTxt(q.trim());
   const l = ALIMENTOS.filter(a => !nq || normTxt(a.n).includes(nq));
-  return l.map(a => `<button class="row" data-addalim="${a.id}"><span class="t"><span class="n">${esc(a.n)}</span><span class="m mono">${a.k} kcal · P ${a.p} · C ${a.c} · G ${a.g} /100 ${a.liq?"ml":"g"}</span></span><span style="color:var(--accent);font-weight:700">+</span></button>`).join("")
+  return l.map(a => `<button class="row" data-addalim="${a.id}"><span class="t"><span class="n">${esc(a.n)}</span><span class="m mono">${a.k} kcal · P ${fmtN(a.p)} · C ${fmtN(a.c)} · G ${fmtN(a.g)} /100 ${a.liq?"ml":"g"}</span></span><span style="color:var(--accent);font-weight:700">+</span></button>`).join("")
     + (q.trim() ? `<button class="row" data-addmanual><span class="t"><span class="n">Añadir “${esc(q.trim())}”</span><span class="m">No está en la lista: escribe tú sus calorías y macros</span></span><span style="color:var(--accent);font-weight:700">+</span></button>` : "");
+}
+
+
+/* ---------- qué cocino: vistas ---------- */
+function vCocinar(){
+  const sel = S.have.map(id => `<button class="chip on" data-unhav="${id}" aria-label="Quitar ${esc(alim(id)?.n)}">${esc(alim(id)?.n)} ✕</button>`).join("");
+  let recs = RECETAS.map(rc => ({rc, ev:evalReceta(rc), tg:tagsReceta(rc)}))
+    .filter(x => S.filt.every(f => x.tg[f]) && (S.mom === "todos" || x.rc.momento === S.mom));
+  if (S.have.length) recs.sort((a, b) => b.ev.score - a.ev.score || a.ev.falta - b.ev.falta || a.rc.min - b.rc.min);
+  return `<div class="stack">
+    <section class="card"><h3>¿Qué tienes en casa?</h3>
+      <input class="search" id="dq" type="search" placeholder="Añade ingredientes: huevo, arroz, pollo…" aria-label="Añadir ingrediente que tienes" autocomplete="off">
+      <div class="chips wrap" id="dres"></div>
+      ${sel ? `<div class="chips wrap">${sel}</div>` : `<div class="sub">Añade lo que tienes y te ordeno las recetas por lo que puedes cocinar ya.</div>`}
+      <label class="chk"><input type="checkbox" id="basicos" ${S.basicos?"checked":""}> Tengo lo básico: aceite, sal y especias</label>
+    </section>
+    <div>
+      <div class="chips wrap" role="group" aria-label="Preferencias">${FILTROS.map(([k,l]) => `<button class="chip" data-filt="${k}" aria-pressed="${S.filt.includes(k)}">${l}</button>`).join("")}</div>
+      <div class="chips wrap" role="group" aria-label="Momento del día">${MOMS.map(([k,l]) => `<button class="chip" data-mom="${k}" aria-pressed="${S.mom===k}">${l}</button>`).join("")}</div>
+    </div>
+    <div class="sect-h" style="margin:0"><h2 style="font-size:1.4rem">Recetas</h2><span class="sub mono">${recs.length} de ${RECETAS.length}</span></div>
+    <div class="list">${recs.map(x => recetaCard(x.rc, x.ev)).join("") || `<div class="notice">Ninguna receta cumple esos filtros. Quita alguno.</div>`}</div>
+    <section class="card"><h3>Comparar precios</h3><div class="sub">Busca un alimento en los supermercados y compara el precio por kilo y por proteína con lo que anota la comunidad.</div><div><button class="btn" data-preciosall>Comparar precios</button></div></section>
+  </div>`;
+}
+function recetaCard(rc, ev){
+  const n = nReceta(rc);
+  const falta = ev.items.filter(i => i.st === "falta").map(i => alim(i.id)?.n);
+  const subs = ev.items.filter(i => i.st === "sub").map(i => `${alim(i.sub)?.n} en vez de ${alim(i.id)?.n.toLowerCase()}`);
+  return `<article class="card">
+    <div class="cardfoot"><span class="tag">${esc(rc.momento)}</span><span class="sub mono">${rc.min} min · ${fmtN(n.k,0)} kcal · P ${fmtN(n.p,0)} g</span></div>
+    <h3>${esc(rc.n)}</h3>
+    ${S.have.length ? `<div class="have"><div class="track"><i style="width:${Math.round(ev.score * 100)}%"></i></div><span class="mono">${ev.falta ? `Tienes ${ev.ok + ev.sub} de ${ev.total}` : ev.sub ? "Lo tienes, con cambios" : "Lo tienes todo"}</span></div>` : ""}
+    ${S.have.length && falta.length ? `<div class="sub">Te falta: ${esc(falta.join(", "))}</div>` : ""}
+    ${subs.length ? `<div class="sub">Puedes usar ${esc(subs.join("; "))}</div>` : ""}
+    <div><button class="btn sm" data-receta="${rc.id}">Ver receta</button></div>
+  </article>`;
+}
+function recetaDetail(id){
+  const rc = RECETAS.find(r => r.id === id); if (!rc) return;
+  const ev = evalReceta(rc), n = nReceta(rc), co = costeReceta(rc), tg = tagsReceta(rc);
+  const ic = {ok:["✓","ok","Lo tienes"], sub:["↔","sb","Sustituye"], falta:["✕","no","Te falta"]};
+  openSheet(`<button class="btn sm close" data-close>Cerrar</button>
+    <span class="tag">${esc(rc.momento)} · ${rc.min} min</span>
+    <h2 style="margin-top:8px">${esc(rc.n)}</h2>
+    <div class="meta"><span class="mono">${fmtN(n.k,0)} kcal</span><span class="mono">P ${fmtN(n.p,0)} · C ${fmtN(n.c,0)} · G ${fmtN(n.g,0)} g</span>${tg.veg?"<span>Vegetariana</span>":""}${tg.sinlac?"<span>Sin lactosa</span>":""}</div>
+    <div class="blk"><h4>Ingredientes</h4><ul class="stl">${ev.items.map(i => { const a = alim(i.id), show = S.have.length > 0, [sym, cls, lbl] = ic[i.st];
+      const q = fmtCant({cantidad:i.cant, unidad:i.u});
+      return `<li><span class="ic ${show ? cls : ""}" title="${show ? lbl : ""}">${show ? sym : "·"}</span><span>${esc(q)} · ${esc(a?.n)}${i.st === "sub" ? `<br><span class="sub">Usa ${esc(alim(i.sub)?.n.toLowerCase())}</span>` : ""}</span><button class="btn sm ghost" data-precios="${i.id}" aria-label="Dónde comprar ${esc(a?.n)}">€</button></li>`; }).join("")}</ul>
+      ${S.have.length ? "" : `<div class="sub" style="margin-top:6px">Añade lo que tienes en casa para ver qué te falta.</div>`}</div>
+    <div class="blk"><h4>Preparación</h4><ol class="steps">${rc.pasos.map(x => `<li><span>${esc(x)}</span></li>`).join("")}</ol></div>
+    <div class="blk card"><h3>Coste aproximado</h3>${co.con ? `<div><b class="mono" style="font-size:1.2rem">${fmtEur(co.total)} €</b> <span class="sub">por ración, con precios de ${co.con} de ${co.de} ingredientes</span></div>` : `<div class="sub">Aún no hay precios anotados para estos ingredientes. Pulsa € en cualquiera para ver dónde comprarlo y anotar lo que te cuesta.</div>`}</div>
+    ${canSave() ? `<div class="blk"><button class="btn pri" data-rec2diet="${rc.id}">Añadir a mi dieta</button></div>` : ""}`);
+}
+function preciosSheet(alimId){
+  const a = alim(alimId); if (!a) return;
+  const st = statsPrecio(alimId), q = busqueda(a), prot = a.p >= 8;
+  openSheet(`<button class="btn sm close" data-close>Cerrar</button>
+    <span class="tag">Dónde comprar</span><h2 style="margin-top:8px">${esc(a.n)}</h2>
+    <div class="sub">${a.k} kcal · P ${fmtN(a.p)} g por 100 ${a.liq?"ml":"g"}</div>
+    <div class="blk"><h4>Buscar en el supermercado</h4><div class="chips wrap">${TIENDAS.filter(t => t.url).map(t => `<a class="chip" href="${t.url(q)}" target="_blank" rel="noopener">${t.n} ↗</a>`).join("")}</div></div>
+    <div class="blk"><h4>Precios de la comunidad</h4>
+      ${st.filas.length ? `<div class="tbl"><table><thead><tr><th>Tienda</th><th style="text-align:right">€/kg</th>${prot?`<th style="text-align:right">€/100 g prot.</th>`:""}<th style="text-align:right">Datos</th></tr></thead><tbody>
+        ${st.filas.map((f, i) => `<tr class="${i===0?"best":""}"><td>${esc(tiendaN(f.tienda))}${i===0?" · la más barata":""}</td><td class="num">${fmtEur(f.kg)}</td>${prot?`<td class="num">${f.prot!=null?fmtEur(f.prot):"—"}</td>`:""}<td class="num">${f.n}</td></tr>`).join("")}
+        </tbody></table></div><div class="sub" style="margin-top:6px">Mejor precio anotado por tienda en los últimos 6 meses.${prot ? " El € por 100 g de proteína sirve para comparar la calidad-precio entre alimentos proteicos." : ""}</div>`
+      : `<div class="notice">Nadie ha anotado todavía el precio de este alimento.</div>`}</div>
+    ${canSave() ? `<div class="blk card"><h3>Anotar un precio</h3>
+      <label class="f">Tienda<select id="pr-t">${TIENDAS.map(t => `<option value="${t.id}">${t.n}</option>`).join("")}</select></label>
+      <div class="two"><label class="f">Precio (€)<input id="pr-p" inputmode="decimal" placeholder="1,10"></label><label class="f">Contenido (${a.liq?"ml":"g"})<input id="pr-c" inputmode="decimal" placeholder="${a.liq?"1000":"500"}"></label></div>
+      <div class="sub">Ejemplo: paquete de ${esc(a.n.toLowerCase())} de ${a.liq?"1000 ml":"500 g"} a 1,10 €.${S.guest ? " En la versión de prueba se guarda solo en tu navegador." : " Lo verán el resto de usuarios."}</div>
+      <div><button class="btn pri" data-saveprecio="${a.id}">Guardar precio</button></div></div>` : ""}`);
+}
+function preciosAllSheet(){
+  openSheet(`<button class="btn sm close" data-close>Cerrar</button><h2>Comparar precios</h2>
+    <input class="search" id="pq2" type="search" placeholder="Buscar alimento" aria-label="Buscar alimento" style="margin-top:8px">
+    <div class="list blk" id="p2list">${preciosList("")}</div>`);
+}
+function preciosList(q){
+  const nq = normTxt(q.trim());
+  return ALIMENTOS.filter(a => !nq || normTxt(a.n).includes(nq)).map(a => { const st = statsPrecio(a.id);
+    return `<button class="row" data-precios="${a.id}"><span class="t"><span class="n">${esc(a.n)}</span><span class="m mono">${st.mejor ? `desde ${fmtEur(st.mejor.kg)} €/kg · ${esc(tiendaN(st.mejor.tienda))}` : "Sin precios todavía"}</span></span><span aria-hidden="true" style="color:var(--muted)">›</span></button>`; }).join("");
+}
+function recetaAComida(rc){
+  const ev = evalReceta(rc), notas = [];
+  const ingredientes = ev.items.map(i => {
+    let id = i.id, cant = i.cant, u = i.u;
+    if (i.st === "sub"){ const nu = alim(i.sub); if (!(u === "g" || u === "ml" || nu.u[u])){ cant = Math.round(gramosIng({alimentoId:id, cantidad:cant, unidad:u})); u = "g"; } notas.push(`Usa ${nu.n.toLowerCase()} en lugar de ${alim(id).n.toLowerCase()}.`); id = i.sub; }
+    return {alimentoId:id, nombre:alim(id).n, cantidad:String(cant), unidad:u};
+  });
+  return {id:uidGen(), momento:rc.momento, nombre:rc.n, ingredientes, pasosTxt:[...notas, ...rc.pasos].join("\n"), foto:null};
 }
 
 /* ---------- diario: vistas ---------- */
@@ -1040,6 +1291,24 @@ document.addEventListener("click", async ev => {
   if (d.tab){ S.tab = d.tab; S.confirmDel = null; try{localStorage.setItem("fc_tab", S.tab)}catch{}; render(); window.scrollTo(0,0); return; }
   if ("close" in d) return closeSheet();
   if ("export" in d){ exportar(); return; }
+  /* qué cocino y precios */
+  if (d.hav){ if (!S.have.includes(d.hav)) S.have.push(d.hav); guardarDespensa(); render(); const i = $("#dq"); if (i){ i.focus(); } return; }
+  if (d.unhav){ S.have = S.have.filter(x => x !== d.unhav); guardarDespensa(); render(); return; }
+  if (d.filt){ S.filt = S.filt.includes(d.filt) ? S.filt.filter(x => x !== d.filt) : [...S.filt, d.filt]; guardarDespensa(); render(); return; }
+  if (d.mom){ S.mom = d.mom; guardarDespensa(); render(); return; }
+  if (d.receta){ recetaDetail(d.receta); return; }
+  if (d.precios){ preciosSheet(d.precios); return; }
+  if ("preciosall" in d){ preciosAllSheet(); return; }
+  if (d.saveprecio){
+    const precio = num($("#pr-p").value), cantidad = num($("#pr-c").value), tienda = $("#pr-t").value;
+    if (!precio || precio <= 0 || precio > 500){ toast("Escribe un precio válido en euros"); $("#pr-p").focus(); return; }
+    if (!cantidad || cantidad <= 0 || cantidad > 50000){ toast("Escribe el contenido del paquete en gramos o ml"); $("#pr-c").focus(); return; }
+    t.disabled = true;
+    try { await guardarPrecio({alimentoId:d.saveprecio, tienda, precio, cantidad, fecha:hoyStr()}); toast("Precio guardado"); preciosSheet(d.saveprecio); render(); }
+    catch { t.disabled = false; toast("No se pudo guardar el precio"); }
+    return;
+  }
+  if (d.rec2diet){ const rc = RECETAS.find(r => r.id === d.rec2diet); if (!S.dDraft) { S.dDraft = newPlan(); S.dDraft.comidas = []; S.dEditing = null; } S.dDraft.comidas.push(recetaAComida(rc)); closeSheet(); S.crearSeg = "dieta"; S.tab = "crear"; render(); window.scrollTo(0, document.body.scrollHeight); toast(`${rc.n} añadida a la dieta`); return; }
   /* dietas */
   if (d.pseg){ S.dietSeg = d.pseg; render(); return; }
   if ("newdiet" in d){ S.tab = "crear"; S.crearSeg = "dieta"; render(); window.scrollTo(0,0); return; }
@@ -1105,6 +1374,9 @@ document.addEventListener("input", ev => {
   if (t.id === "q"){ S.q = t.value; S._qFocus = true; render(); return; }
   if (t.id === "pq"){ $("#plist").innerHTML = pickerList(t.value); return; }
   if (t.id === "iq"){ $("#ilist").innerHTML = ingList(t.value); return; }
+  if (t.id === "pq2"){ $("#p2list").innerHTML = preciosList(t.value); return; }
+  if (t.id === "basicos"){ S.basicos = t.checked; guardarDespensa(); render(); return; }
+  if (t.id === "dq"){ const nq = normTxt(t.value.trim()); $("#dres").innerHTML = !nq ? "" : ALIMENTOS.filter(a => !S.have.includes(a.id) && normTxt(a.n).includes(nq)).slice(0, 12).map(a => `<button class="chip" data-hav="${a.id}">+ ${esc(a.n)}</button>`).join("") || `<span class="sub">No está en la lista de alimentos.</span>`; return; }
   if (S.dDraft && t.closest("#dform")){ if (t.type === "file") return; syncDieta(); refreshDietaTotals(); return; }
   if (S.log){
     if (t.dataset.l){ const [i,j,k] = t.dataset.l.split("."); S.log.ejercicios[+i].sets[+j][k] = t.value; return; }
