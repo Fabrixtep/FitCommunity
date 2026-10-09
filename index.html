@@ -616,20 +616,19 @@ function guardarDespensa(){ try { localStorage.setItem("fc_despensa", JSON.strin
 try { const dz = JSON.parse(localStorage.getItem("fc_despensa") || "null"); if (dz){ S.have = (dz.have || []).filter(alim); S.basicos = dz.basicos !== false; S.filt = dz.filt || []; S.mom = dz.mom || "todos"; } } catch {}
 
 /* ---------- dónde comprar y precios ---------- */
-/* Las webs de los supermercados no aceptan bien búsquedas por enlace, así que se busca en Google dentro de cada web. */
-const gsite = dom => q => `https://www.google.com/search?q=${q}+site%3A${dom}`;
+/* Las tiendas online no admiten búsquedas desde un enlace externo: el botón abre la tienda y copia el término para pegarlo en su buscador. */
 const TIENDAS = [
-  {id:"mercadona", n:"Mercadona", url:gsite("tienda.mercadona.es")},
-  {id:"carrefour", n:"Carrefour", url:gsite("carrefour.es")},
-  {id:"dia", n:"Dia", url:gsite("dia.es")},
-  {id:"lidl", n:"Lidl", url:gsite("lidl.es")},
-  {id:"alcampo", n:"Alcampo", url:gsite("compraonline.alcampo.es")},
-  {id:"otra", n:"Otra tienda", url:null}
+  {id:"mercadona", n:"Mercadona", web:"https://tienda.mercadona.es/"},
+  {id:"carrefour", n:"Carrefour", web:"https://www.carrefour.es/supermercado"},
+  {id:"dia", n:"Dia", web:"https://www.dia.es/"},
+  {id:"alcampo", n:"Alcampo", web:"https://www.compraonline.alcampo.es/"},
+  {id:"lidl", n:"Lidl", web:null},
+  {id:"otra", n:"Otra tienda", web:null}
 ];
 const tiendaN = id => TIENDAS.find(t => t.id === id)?.n || "Otra tienda";
 const fmtEur = n => n.toLocaleString("es-ES", {minimumFractionDigits:2, maximumFractionDigits:2});
 const TERMINOS = {"arroz-blanco":"arroz","arroz-cocido":"arroz cocido vasito","arroz-integral":"arroz integral",pasta:"macarrones","pasta-cocida":"pasta","pan-blanco":"pan","pan-integral":"pan integral","tortilla-trigo":"tortillas de trigo",avena:"copos de avena",patata:"patatas",lentejas:"lentejas","lentejas-cocidas":"lentejas cocidas","garbanzos-cocidos":"garbanzos cocidos",pollo:"pechuga de pollo",pavo:"pechuga de pavo",ternera:"filete de ternera","carne-picada":"carne picada",salmon:"salmón","atun-lata":"atún al natural",huevo:"huevos",claras:"claras de huevo","leche-semi":"leche semidesnatada","bebida-avena":"bebida de avena","yogur-griego-0":"yogur griego 0%","queso-batido":"queso fresco batido 0%","queso-fresco":"queso fresco burgos",whey:"proteína whey","aceite-oliva":"aceite de oliva virgen extra","crema-cacahuete":"crema de cacahuete",manzana:"manzanas",naranja:"naranjas",tomate:"tomates",cebolla:"cebollas",zanahoria:"zanahorias","chocolate-negro":"chocolate negro 85%","cacao-puro":"cacao puro en polvo"};
-const busqueda = a => encodeURIComponent(TERMINOS[a.id] || a.n.replace(/\s*\(.*?\)\s*/g, " ").trim().toLowerCase());
+const busqueda = a => TERMINOS[a.id] || a.n.replace(/\s*\(.*?\)\s*/g, " ").trim().toLowerCase();
 function misPrecios(){ return S.guest ? Object.entries(S.g?.precios || {}).map(([id, e]) => ({...e, id, autor:S.uid})) : S.preciosCom.filter(e => e.autor === S.uid); }
 function todosPrecios(){ return S.guest ? [...S.preciosCom, ...misPrecios()] : S.preciosCom; }
 function statsPrecio(alimId){
@@ -1062,7 +1061,7 @@ function preciosSheet(alimId){
   openSheet(`<button class="btn sm close" data-close>Cerrar</button>
     <span class="tag">Dónde comprar</span><h2 style="margin-top:8px">${esc(a.n)}</h2>
     <div class="sub">${a.k} kcal · P ${fmtN(a.p)} g por 100 ${a.liq?"ml":"g"}</div>
-    <div class="blk"><h4>Buscar en el supermercado</h4><div class="sub" style="margin-bottom:6px">Abre una búsqueda en Google dentro de la web de cada supermercado. Lidl vende pocos alimentos online, así que a veces no saldrán.</div><div class="chips wrap">${TIENDAS.filter(t => t.url).map(t => `<a class="chip" href="${t.url(q)}" target="_blank" rel="noopener">${t.n} ↗</a>`).join("")}</div></div>
+    <div class="blk"><h4>Comprar online</h4><div class="sub" style="margin-bottom:6px">Al pulsar una tienda se copia <b>«${esc(q)}»</b>: pégalo en su buscador. Si la tienda te pide código postal, ponlo primero.</div><div class="chips wrap">${TIENDAS.filter(t => t.web).map(t => `<a class="chip" href="${t.web}" target="_blank" rel="noopener" data-copiar="${esc(q)}">${t.n} ↗</a>`).join("")}</div></div>
     <div class="blk"><h4>Precios de la comunidad</h4>
       ${st.filas.length ? `<div class="tbl"><table><thead><tr><th>Tienda</th><th style="text-align:right">€/kg</th>${prot?`<th style="text-align:right">€/100 g prot.</th>`:""}<th style="text-align:right">Datos</th></tr></thead><tbody>
         ${st.filas.map((f, i) => `<tr class="${i===0?"best":""}"><td>${esc(tiendaN(f.tienda))}${i===0?" · la más barata":""}</td><td class="num">${fmtEur(f.kg)}</td>${prot?`<td class="num">${f.prot!=null?fmtEur(f.prot):"—"}</td>`:""}<td class="num">${f.n}</td></tr>`).join("")}
@@ -1286,6 +1285,11 @@ function pickerList(q){
 }
 
 /* ---------- eventos ---------- */
+document.addEventListener("click", ev => {
+  const a = ev.target.closest("a[data-copiar]"); if (!a) return;
+  const txt = a.dataset.copiar;
+  try { navigator.clipboard.writeText(txt).then(() => toast(`Copiado «${txt}»: pégalo en el buscador`), () => toast(`Busca «${txt}» en la tienda`)); } catch { toast(`Busca «${txt}» en la tienda`); }
+}, true);
 document.addEventListener("click", async ev => {
   const t = ev.target.closest("button,[data-close]");
   if (ev.target.id === "sheet") return closeSheet();
