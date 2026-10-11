@@ -82,7 +82,7 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--surf
 nav.tabs div{display:flex;max-width:680px;width:100%}
 nav.tabs button{flex:1;min-width:0;border:none;background:transparent;padding:8px 2px;font-family:var(--display);font-weight:700;font-size:.95rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-radius:8px}
 nav.tabs button[aria-current="page"]{color:var(--accent)}
-nav.tabs .plus{color:var(--accent-fg);background:var(--accent);margin-inline:4px}
+nav.tabs .plus{color:var(--accent-fg);background:var(--accent);margin-inline:4px;flex:0 0 44px;font-size:1.5rem;line-height:1;padding:4px 0}
 nav.tabs .plus[aria-current="page"]{color:var(--accent-fg)}
 /* hoja de detalle */
 .sheet{position:fixed;inset:0;z-index:20;background:rgb(0 0 0 / .45);display:flex;align-items:flex-end;justify-content:center}
@@ -189,6 +189,32 @@ a.chip{text-decoration:none;color:var(--fg)}
 .ley{display:inline-flex;align-items:center;gap:6px}
 .ley i{width:12px;height:12px;border-radius:3px;display:inline-block}
 .ley i.mp{background:var(--accent)} .ley i.ms{background:var(--ms)}
+.av{border-radius:50%;object-fit:cover;flex:none;display:inline-grid;place-items:center;background:var(--sunk);color:var(--muted);font-weight:800;font-family:var(--display);vertical-align:middle}
+.whob{display:flex;align-items:center;gap:8px;border:none;background:none;padding:0;color:var(--muted);font-size:.85rem;min-width:0}
+.whob span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+.who2{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--fg);min-width:0}
+.perfil .banner{aspect-ratio:3/1;max-width:100%;border-radius:var(--r);overflow:hidden;background:linear-gradient(135deg,var(--accent),var(--lv3))}
+.perfil .banner img{width:100%;height:100%;object-fit:cover;display:block}
+.phead{display:flex;justify-content:space-between;align-items:flex-end;gap:8px;margin-top:-42px;padding:0 12px}
+.avwrap .av{border:3px solid var(--bg)}
+.pname{font-size:1.8rem;text-transform:uppercase;margin:8px 0 4px}
+.pstats{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.9rem;color:var(--muted);margin-top:8px}
+.pstats b{color:var(--fg);font-family:var(--mono);font-weight:500}
+.pgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+.pcell{position:relative;border:none;padding:0;background:var(--sunk);aspect-ratio:4/5;border-radius:6px;overflow:hidden;cursor:pointer}
+.pcell img,.fotobig img{width:100%;height:100%;object-fit:cover;display:block}
+.pdate{position:absolute;left:4px;bottom:4px;font-size:.7rem;background:rgb(0 0 0 / .55);color:#fff;padding:1px 6px;border-radius:4px}
+.pvis{position:absolute;right:4px;top:4px;font-size:.62rem;padding:1px 5px;background:var(--surface)}
+.fotobig{border:none;padding:0;background:var(--sunk);border-radius:8px;overflow:hidden;display:block;width:100%;aspect-ratio:4/5;cursor:pointer}
+.fotofull{width:100%;max-height:70vh;object-fit:contain;border-radius:8px;background:var(--sunk);display:block;min-height:220px}
+.stars{color:var(--warn)}
+.stars-in{display:flex;gap:2px}
+.star{border:none;background:none;font-size:1.9rem;line-height:1;color:var(--line);padding:2px 3px;cursor:pointer}
+.star[aria-pressed="true"]{color:var(--warn)}
+.resena{display:grid;gap:4px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.prow2{display:flex;gap:12px;align-items:center;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);text-align:left;width:100%;max-width:100%}
+.prow2 .t{flex:1;min-width:0;display:grid;gap:2px}
+.prow2 .t .m{font-size:.85rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .guestbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 12px;margin-bottom:14px;border-radius:8px;background:var(--sunk);font-size:.88rem;color:var(--muted)}
 .guestbar b{color:var(--fg)}
 .guestbar.warn{border-left:3px solid var(--accent)}
@@ -231,7 +257,8 @@ a.chip{text-decoration:none;color:var(--fg)}
 .chart .pt{fill:var(--accent)}
 .chart .end{fill:var(--surface);stroke:var(--accent);stroke-width:2.5}
 .chart .endl{fill:var(--fg);font-weight:500}
-@media (max-width:420px){.grid5{grid-template-columns:repeat(3,1fr)}.rx{grid-template-columns:repeat(2,1fr)}.tiles{grid-template-columns:1fr 1fr}nav.tabs button{font-size:.76rem;letter-spacing:0;padding:8px 1px}nav.tabs div{gap:3px}}
+@media (max-width:420px){.grid5{grid-template-columns:repeat(3,1fr)}.rx{grid-template-columns:repeat(2,1fr)}.tiles{grid-template-columns:1fr 1fr}nav.tabs button{font-size:.7rem;letter-spacing:0;padding:8px 1px}nav.tabs div{gap:2px}}
+@media (max-width:380px){nav.tabs button{font-size:.62rem}nav.tabs .plus{flex-basis:38px}}
 @media (prefers-reduced-motion:no-preference){.sheet .panel{animation:up .22s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.6}}}
 </style>
 </head>
@@ -250,7 +277,8 @@ a.chip{text-decoration:none;color:var(--fg)}
   <button data-tab="rutinas" id="tab-rutinas">Rutinas</button>
   <button data-tab="dietas" id="tab-dietas">Dietas</button>
   <button data-tab="diario" id="tab-diario">Diario</button>
-  <button data-tab="crear" id="tab-crear" class="plus">+ Crear</button>
+  <button data-tab="comunidad" id="tab-comunidad">Comunidad</button>
+  <button data-tab="crear" id="tab-crear" class="plus" aria-label="Crear rutina o dieta">+</button>
 </div></nav>
 <div id="sheet-root"></div>
 
@@ -272,7 +300,10 @@ const S = {
   dias:{}, fecha:null, diaSeg:"hoy", log:null, rango:90, ejProg:null, pickFor:"rutina", wq:Promise.resolve(),
   guest:false, guestOk:true, g:null,
   dietasIdx:{}, planesPriv:{}, planesPubMine:{}, planCache:{}, dietSeg:"mias", crearSeg:"rutina", dDraft:null, dEditing:null, pickIngFor:0,
-  have:[], basicos:true, filt:[], mom:"todos", preciosCom:[]
+  have:[], basicos:true, filt:[], mom:"todos", preciosCom:[],
+  comSeg:"explorar", ex:{tipo:"todo", nivel:"", obj:"", grupo:"", mat:"", orden:"valor", q:""}, fotoFiltro:"todos",
+  perfiles:{}, miPerfil:null, fotosIdx:{}, misFotosPriv:{}, misFotosPub:{}, seguir:{}, resenas:{}, yo:null,
+  perfilDraft:null, fotoDraft:null, estrellaSel:null
 };
 const hoyStr = () => new Date().toLocaleDateString("sv");
 const shiftDate = (f, n) => { const d = new Date(f + "T12:00:00"); d.setDate(d.getDate() + n); return d.toLocaleDateString("sv"); };
@@ -298,18 +329,22 @@ function enterGuest(){
   S.guest = true; S.uid = S.uid || "local";
   const g = G.load();
   if (g === null) S.guestOk = false;
-  S.g = {rutinas:g?.rutinas || {}, favs:g?.favs || [], dias:g?.dias || {}, planes:g?.planes || {}, precios:g?.precios || {}};
+  S.g = {rutinas:g?.rutinas || {}, favs:g?.favs || [], dias:g?.dias || {}, planes:g?.planes || {}, precios:g?.precios || {}, perfil:g?.perfil || null, fotos:g?.fotos || {}};
   applyGuest();
 }
 function applyGuest(){
   const pr = {}; Object.entries(S.g.rutinas).forEach(([id,r]) => pr[id] = {...r, id, autor:S.uid, publica:false});
   S.privadas = pr; S.favs = S.g.favs.slice(); S.dias = {...S.g.dias}; S.planesPriv = {...S.g.planes};
+  S.miPerfil = S.g.perfil || null; S.misFotosPub = {}; S.misFotosPriv = {};
+  Object.entries(S.g.fotos || {}).forEach(([id, f]) => (f.publica ? S.misFotosPub : S.misFotosPriv)[id] = f);
+  S.fotosIdx = {[S.uid]: {fotos:Object.fromEntries(Object.entries(S.misFotosPub).map(([id, f]) => [id, {fecha:f.fecha, nota:f.nota, peso:f.peso, creada:f.creada}]))}};
 }
 function persistGuest(){ if (!G.save(S.g)) S.guestOk = false; applyGuest(); }
 function datosExport(){
   const rutinas = Object.values(allRutinas()).filter(r => r.autor === S.uid).map(({autor, ...r}) => r);
   return {app:"FIT Community", formato:1, exportado:new Date().toISOString(), modo:S.guest ? "invitado" : "cuenta",
-    rutinas, precios:misPrecios(), dietas:Object.entries({...S.planesPriv, ...S.planesPubMine}).map(([id, pl]) => ({id, publica:!!S.planesPubMine[id], ...pl})), favoritas:S.favs, dias:Object.values(S.dias).sort((a,b) => a.fecha < b.fecha ? -1 : 1)};
+    rutinas, perfil:S.miPerfil ? {alias:S.miPerfil.alias || "", bio:S.miPerfil.bio || "", publico:!!S.miPerfil.publico} : null,
+    fotosProgreso:misFotos().map(({img, ...f}) => f), precios:misPrecios(), dietas:Object.entries({...S.planesPriv, ...S.planesPubMine}).map(([id, pl]) => ({id, publica:!!S.planesPubMine[id], ...pl})), favoritas:S.favs, dias:Object.values(S.dias).sort((a,b) => a.fecha < b.fecha ? -1 : 1)};
 }
 async function exportar(){
   const txt = JSON.stringify(datosExport(), null, 2);
@@ -360,7 +395,7 @@ async function boot(){
   S.user = user; S.db = db;
   S.uid = user ? await user.id() : null;
   S.canWrite = user ? await user.can("data.write") : null;
-  if (user){ user.me().then(me => { if (me?.name) $("#who").innerHTML = `<img alt="" src="${esc(me.avatarUrl)}"><span>${esc(me.name)}</span>`; }); }
+  if (user){ user.me().then(me => { S.yo = {name:me?.name || "", avatar:me?.avatarUrl || ""}; render(true); }); }
 
   if (db){
     db.collection("ejercicios").orderBy("orden").onSnapshot(snap => {
@@ -377,6 +412,10 @@ async function boot(){
       const out = {}; snap.docs.forEach(d => out[d.id] = d.data().planes || {});
       S.dietasIdx = out; resolveNames(); render(true);
     });
+    db.collection("perfiles").onSnapshot(snap => { const o = {}; snap.docs.forEach(d => o[d.id] = d.data()); S.perfiles = o; resolveNames(); render(true); });
+    db.collection("fotos").onSnapshot(snap => { const o = {}; snap.docs.forEach(d => o[d.id] = d.data()); S.fotosIdx = o; resolveNames(); render(true); });
+    db.collection("seguir").onSnapshot(snap => { const o = {}; snap.docs.forEach(d => o[d.id] = d.data()); S.seguir = o; resolveNames(); render(true); });
+    db.collection("resenas").onSnapshot(snap => { const o = {}; snap.docs.forEach(d => o[d.id] = d.data()); S.resenas = o; resolveNames(); render(true); });
     db.collection("precios").onSnapshot(snap => {
       const out = []; snap.docs.forEach(d => Object.entries(d.data().items || {}).forEach(([id, e]) => out.push({...e, id, autor:d.id})));
       S.preciosCom = out; render(true);
@@ -399,6 +438,9 @@ async function boot(){
     db.collection(`data/users/${S.uid}/mis/planes`).onSnapshot(snap => {
       const out = {}; snap.docs.forEach(d => out[d.id] = d.data()); S.planesPriv = out; render(true);
     });
+    db.doc(`data/users/${S.uid}/perfil`).onSnapshot(d => { S.miPerfil = d.exists ? d.data() : null; render(true); });
+    db.collection(`data/users/${S.uid}/mis/fotos`).onSnapshot(snap => { const o = {}; snap.docs.forEach(d => o[d.id] = d.data()); S.misFotosPriv = o; render(true); });
+    db.collection(`fotos/${S.uid}/items`).onSnapshot(snap => { const o = {}; snap.docs.forEach(d => o[d.id] = d.data()); S.misFotosPub = o; render(true); });
   } else enterGuest();
   render();
 }
@@ -778,6 +820,105 @@ function cuerpoSVG(e, grande){
   return `<svg class="cuerpo${grande ? " grande" : ""}" viewBox="0 0 200 ${grande ? 220 : 204}" role="img" aria-label="Músculos que trabaja: ${esc([...(e.musculosPrincipales||[])].join(", "))}">${vistaSVG("frente", mm, 0)}${vistaSVG("espalda", mm, 100)}${lbl}</svg>`;
 }
 
+
+/* ---------- comunidad: datos ---------- */
+function reducirImg(src, o){
+  return new Promise((res, rej) => { const img = new Image(); img.onload = () => {
+    let sx = 0, sy = 0, sw = img.width, sh = img.height;
+    if (o.ratio){ const r = sw / sh; if (r > o.ratio){ sw = sh * o.ratio; sx = (img.width - sw) / 2; } else { sh = sw / o.ratio; sy = (img.height - sh) / 2; } }
+    let sc = Math.min(1, o.w / sw), out = "", q = .82;
+    for (let i = 0; i < 6; i++){
+      const cv = document.createElement("canvas"); cv.width = Math.max(1, Math.round(sw * sc)); cv.height = Math.max(1, Math.round(sh * sc));
+      cv.getContext("2d").drawImage(img, sx, sy, sw, sh, 0, 0, cv.width, cv.height);
+      out = cv.toDataURL("image/jpeg", q); if (out.length <= o.max) break;
+      if (q > .55) q -= .12; else sc *= .8;
+    }
+    res(out); }; img.onerror = rej; img.src = src; });
+}
+function leerArchivo(file){ return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(file); }); }
+const IMG = {avatar:{w:256, ratio:1, max:30000}, banner:{w:960, ratio:3, max:70000}, foto:{w:900, max:115000}};
+function nombreDe(uid){
+  if (uid === "oficial") return "FIT Community";
+  if (uid === S.uid) return S.miPerfil?.alias || S.yo?.name || "Tú";
+  const p = S.perfiles[uid]; return (p?.publico && p.alias) || names[uid]?.name || "Usuario de la comunidad";
+}
+function avatarDe(uid, size){
+  const mio = uid === S.uid, p = mio ? S.miPerfil : S.perfiles[uid];
+  const src = (mio || p?.publico) && p?.avatar ? p.avatar : (mio ? S.yo?.avatar : names[uid]?.avatarUrl);
+  const st = `width:${size}px;height:${size}px;font-size:${Math.round(size * .42)}px`;
+  return src ? `<img class="av" style="${st}" src="${esc(src)}" alt="">` : `<span class="av" style="${st}">${esc((nombreDe(uid)[0] || "?").toUpperCase())}</span>`;
+}
+const siguiendo = () => S.seguir[S.uid]?.siguiendo || [];
+const seguidoresDe = uid => Object.values(S.seguir).filter(v => (v?.siguiendo || []).includes(uid)).length;
+const comunidadActiva = () => !S.guest && !!S.db && !!S.uid && S.canWrite !== false;
+async function toggleSeguir(uid){
+  const l = siguiendo(), nl = l.includes(uid) ? l.filter(x => x !== uid) : [...l, uid];
+  S.seguir = {...S.seguir, [S.uid]: {siguiendo:nl}};
+  await S.db.doc(`seguir/${S.uid}`).set({siguiendo:nl});
+}
+async function guardarPerfil(pf){
+  if (S.guest){ const prev = S.g.perfil; S.g.perfil = pf; if (!G.save(S.g)){ S.g.perfil = prev; throw {code:"espacio"}; } applyGuest(); return; }
+  await S.db.doc(`data/users/${S.uid}/perfil`).set(pf);
+  await S.db.doc(`perfiles/${S.uid}`).set(pf.publico ? pf : {publico:false, actualizado:pf.actualizado});
+}
+function misFotos(){
+  return [...Object.entries(S.misFotosPub).map(([id, f]) => ({...f, id, publica:true})), ...Object.entries(S.misFotosPriv).map(([id, f]) => ({...f, id, publica:false}))]
+    .sort((a, b) => (b.fecha || "").localeCompare(a.fecha || "") || (b.creada || 0) - (a.creada || 0));
+}
+function fotosPublicas(){
+  const out = []; Object.entries(S.fotosIdx).forEach(([uid, d]) => Object.entries(d?.fotos || {}).forEach(([id, f]) => out.push({...f, id, uid})));
+  return out.sort((a, b) => (b.fecha || "").localeCompare(a.fecha || "") || (b.creada || 0) - (a.creada || 0));
+}
+async function guardarFoto(f){
+  const {id, publica, _confirm, ...body} = f;
+  if (S.guest){ const prev = S.g.fotos[id]; S.g.fotos = {...S.g.fotos, [id]: {...body, publica}}; if (!G.save(S.g)){ if (prev) S.g.fotos[id] = prev; else delete S.g.fotos[id]; throw {code:"espacio"}; } applyGuest(); return; }
+  const idx = {...(S.fotosIdx[S.uid]?.fotos || {})};
+  if (publica){
+    await S.db.doc(`fotos/${S.uid}/items/${id}`).set(body);
+    idx[id] = {fecha:body.fecha, nota:body.nota, peso:body.peso, creada:body.creada};
+    await S.db.doc(`fotos/${S.uid}`).set({fotos:idx});
+    if (S.misFotosPriv[id]) await S.db.doc(`data/users/${S.uid}/mis/fotos/${id}`).delete();
+  } else {
+    await S.db.doc(`data/users/${S.uid}/mis/fotos/${id}`).set(body);
+    if (S.misFotosPub[id] || idx[id]){ delete idx[id]; await S.db.doc(`fotos/${S.uid}`).set({fotos:idx}); await S.db.doc(`fotos/${S.uid}/items/${id}`).delete(); }
+  }
+}
+async function borrarFoto(id){
+  if (S.guest){ const m = {...S.g.fotos}; delete m[id]; S.g.fotos = m; G.save(S.g); applyGuest(); return; }
+  if (S.misFotosPriv[id]) await S.db.doc(`data/users/${S.uid}/mis/fotos/${id}`).delete();
+  const idx = {...(S.fotosIdx[S.uid]?.fotos || {})};
+  if (S.misFotosPub[id] || idx[id]){ delete idx[id]; await S.db.doc(`fotos/${S.uid}`).set({fotos:idx}); await S.db.doc(`fotos/${S.uid}/items/${id}`).delete(); }
+}
+const fotoCache = {};
+async function cargarFoto(uid, id){
+  if (uid === S.uid) return (S.misFotosPub[id] || S.misFotosPriv[id])?.img || null;
+  const k = uid + "/" + id; if (fotoCache[k]) return fotoCache[k];
+  if (!S.db) return null;
+  const d = await S.db.doc(`fotos/${uid}/items/${id}`).get(); return d.exists ? (fotoCache[k] = d.data().img) : null;
+}
+function hidratarFotos(){
+  document.querySelectorAll("img[data-src-foto]").forEach(async im => {
+    const [u, i] = im.dataset.srcFoto.split("|"); im.removeAttribute("data-src-foto");
+    try { const src = await cargarFoto(u, i); if (src && im.isConnected) im.src = src; } catch {}
+  });
+}
+function resenasDe(itemId){ const out = []; Object.entries(S.resenas).forEach(([uid, d]) => { const r = d?.items?.[itemId]; if (r) out.push({...r, uid}); }); return out.sort((a, b) => (b.fecha || 0) - (a.fecha || 0)); }
+function mediaDe(itemId){ const l = resenasDe(itemId); return l.length ? {m:l.reduce((a, r) => a + r.estrellas, 0) / l.length, n:l.length} : null; }
+const estrellasTxt = v => "★".repeat(Math.round(v)) + "☆".repeat(5 - Math.round(v));
+function ratingMeta(id){ const r = mediaDe(id); return r ? `<span class="mono stars">★ ${fmtN(r.m, 1)} (${r.n})</span>` : ""; }
+async function guardarResena(itemId, tipo, estrellas, texto){
+  const items = {...(S.resenas[S.uid]?.items || {})}; items[itemId] = {estrellas, texto, fecha:Date.now(), tipo};
+  S.resenas = {...S.resenas, [S.uid]: {items}};
+  await S.db.doc(`resenas/${S.uid}`).set({items});
+}
+async function borrarResena(itemId){
+  const items = {...(S.resenas[S.uid]?.items || {})}; delete items[itemId];
+  S.resenas = {...S.resenas, [S.uid]: {items}};
+  await S.db.doc(`resenas/${S.uid}`).set({items});
+}
+const pl = (n, uno, varios) => `<b>${n}</b> ${n === 1 ? uno : varios}`;
+const autorLink = (uid, txt) => uid && uid !== "oficial" ? `<button class="lnk" data-perfil="${esc(uid)}">${esc(txt)}</button>` : esc(txt);
+
 /* ---------- diario: datos ---------- */
 function diaDe(f){ return S.dias[f] ? JSON.parse(JSON.stringify(S.dias[f])) : {fecha:f, peso:null, energia:null, molestias:"", notas:"", entrenos:[]}; }
 async function guardarDia(f, patch){
@@ -827,7 +968,7 @@ async function guardarLog(){
 }
 async function resolveNames(){
   if (!S.user) return;
-  const ids = [...new Set([...Object.values(S.publicas).map(r => r.autor), ...Object.keys(S.dietasIdx)])].filter(x => x && x !== "local");
+  const ids = [...new Set([...Object.values(S.publicas).map(r => r.autor), ...Object.keys(S.dietasIdx), ...Object.keys(S.perfiles), ...Object.keys(S.fotosIdx), ...Object.keys(S.seguir), ...Object.keys(S.resenas)])].filter(x => x && x !== "local" && x !== "oficial");
   if (!ids.length) return;
   names = await S.user.profiles(ids); render(true);
 }
@@ -866,6 +1007,7 @@ async function toggleFav(id){
 function render(soft){
   document.querySelectorAll("nav.tabs button").forEach(b => { if (b.dataset.tab === S.tab) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
   const v = $("#view");
+  $("#who").innerHTML = S.uid ? `<button class="whob" data-perfil="${S.uid}" aria-label="Mi perfil">${avatarDe(S.uid, 28)}<span>${esc(nombreDe(S.uid))}</span></button>` : "";
   $("#guestbar").innerHTML = !S.guest ? "" : S.guestOk
     ? `<div class="guestbar"><span><b>Versión de prueba.</b> Tu progreso se guarda solo en este navegador. Usa siempre el mismo móvil y no lo abras en incógnito.</span><button class="btn sm" data-export>Exportar</button></div>`
     : `<div class="guestbar warn"><span><b>Este navegador no permite guardar datos</b> (quizá estás en modo incógnito). Lo que hagas se perderá al cerrar. Exporta antes de salir.</span><button class="btn sm" data-export>Exportar</button></div>`;
@@ -873,8 +1015,9 @@ function render(soft){
     const a = document.activeElement;
     if ((S.tab === "crear" && S.draft && $("#rform")) || (S.tab === "crear" && S.dDraft && $("#dform")) || (a && v.contains(a) && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))) { refreshSummary(); return; }
   }
-  v.innerHTML = S.tab === "biblioteca" ? vBiblioteca() : S.tab === "rutinas" ? vRutinas() : S.tab === "dietas" ? vDietas() : S.tab === "diario" ? vDiario() : vCrear();
+  v.innerHTML = S.tab === "biblioteca" ? vBiblioteca() : S.tab === "rutinas" ? vRutinas() : S.tab === "dietas" ? vDietas() : S.tab === "diario" ? vDiario() : S.tab === "comunidad" ? vComunidad() : vCrear();
   if (S.tab === "biblioteca"){ const i = $("#q"); if (i && S._qFocus){ i.focus(); i.setSelectionRange(i.value.length,i.value.length); } }
+  if (S.tab === "comunidad"){ const i = $("#exq"); if (i && S._exFocus){ i.focus(); i.setSelectionRange(i.value.length, i.value.length); } hidratarFotos(); }
 }
 function notReady(){
   if (S.dbMissing) return `<div class="notice">Abre la app con tu sesión de claude.ai iniciada para ver la biblioteca y guardar rutinas.</div>`;
@@ -936,14 +1079,14 @@ function rutinaAdaptada(){
 }
 function rutinaCard(r){
   const mine = r.autor === S.uid, ofi = !!r.oficial;
-  const autor = mine ? "Tú" : ofi ? "FIT Community" : (names[r.autor]?.name || "Usuario de la comunidad");
+  const autor = mine ? "Tú" : ofi ? "FIT Community" : nombreDe(r.autor);
   const fav = S.favs.includes(r.id);
   return `<article class="card">
     <div class="cardfoot"><span>${lvl(r.nivel)}</span>${ofi ? `<span class="tag ok">Recomendada</span>` : `<span class="tag ${r.publica?"pub":""}">${r.publica?"Pública":"Privada"}</span>`}</div>
     <h3>${esc(r.nombre)}</h3>
     ${r.descripcion ? `<div class="sub">${esc(r.descripcion)}</div>` : ""}
-    <div class="meta"><span class="mono">${(r.ejercicios||[]).length} ejerc.</span><span class="mono">~${duracion(r)} min</span><span>${esc(musculos(r).join(" · "))}</span></div>
-    <div class="cardfoot"><span class="sub">por ${esc(autor)}</span>
+    <div class="meta">${ratingMeta(r.id)}<span class="mono">${(r.ejercicios||[]).length} ejerc.</span><span class="mono">~${duracion(r)} min</span><span>${esc(musculos(r).join(" · "))}</span></div>
+    <div class="cardfoot"><span class="sub">por ${mine ? "Tú" : autorLink(r.autor, autor)}</span>
       <span style="display:flex;gap:6px;align-items:center">
         ${S.uid ? `<button class="fav" data-fav="${r.id}" aria-pressed="${fav}" aria-label="${fav?"Quitar de favoritas":"Añadir a favoritas"}">${fav?"★":"☆"}</button>` : ""}
         <button class="btn sm" data-open="${r.id}">Ver</button>
@@ -1034,13 +1177,13 @@ function vDietas(){
 }
 function dietaCard(r){
   const mine = r.autor === S.uid, fav = S.favs.includes(r.id);
-  const autor = mine ? "Tú" : (names[r.autor]?.name || "Usuario de la comunidad");
+  const autor = mine ? "Tú" : nombreDe(r.autor);
   return `<article class="card">
     <div class="cardfoot"><span class="tag">${esc(OBJ[r.objetivo] || "Plan")}</span><span class="tag ${r.publica?"pub":""}">${r.publica?"Pública":"Privada"}</span></div>
     <h3>${esc(r.nombre)}</h3>
     ${r.descripcion ? `<div class="sub">${esc(r.descripcion)}</div>` : ""}
-    <div class="meta"><span class="mono">${r.nComidas} comida${r.nComidas===1?"":"s"}</span><span class="mono">${fmtN(r.kcalReal,0)} kcal</span>${r.kcal?`<span class="mono">obj. ${fmtN(r.kcal,0)}</span>`:""}<span class="mono">P ${r.p} · C ${r.c} · G ${r.g} g</span></div>
-    <div class="cardfoot"><span class="sub">por ${esc(autor)}</span>
+    <div class="meta">${ratingMeta(r.id)}<span class="mono">${r.nComidas} comida${r.nComidas===1?"":"s"}</span><span class="mono">${fmtN(r.kcalReal,0)} kcal</span>${r.kcal?`<span class="mono">obj. ${fmtN(r.kcal,0)}</span>`:""}<span class="mono">P ${r.p} · C ${r.c} · G ${r.g} g</span></div>
+    <div class="cardfoot"><span class="sub">por ${mine ? "Tú" : autorLink(r.autor, autor)}</span>
       <span style="display:flex;gap:6px;align-items:center">
         ${S.uid ? `<button class="fav" data-fav="${r.id}" aria-pressed="${fav}" aria-label="${fav?"Quitar de favoritas":"Añadir a favoritas"}">${fav?"★":"☆"}</button>` : ""}
         <button class="btn sm" data-plan="${r.id}">Ver</button>
@@ -1059,22 +1202,23 @@ function comidaHTML(cm){
   </div></section>`;
 }
 async function planDetail(id){
-  const r = allPlanes()[id]; if (!r) return;
+  const r = allPlanes()[id]; if (!r) return; S.estrellaSel = null;
   const head = `<button class="btn sm close" data-close>Cerrar</button><span class="tag">${esc(OBJ[r.objetivo] || "Plan")}</span><h2 style="margin-top:8px">${esc(r.nombre)}</h2>`;
   openSheet(head + `<div class="notice">Cargando…</div>`);
   let pl = null; try { pl = await planCompleto(r); } catch {}
   if (!pl){ openSheet(head + `<div class="notice">No se pudo cargar esta dieta. Inténtalo de nuevo.</div>`); return; }
   const n = nPlan(pl), t = objetivoG(pl);
-  const autor = r.autor === S.uid ? "Tú" : (names[r.autor]?.name || "Usuario de la comunidad");
+  const autor = r.autor === S.uid ? "Tú" : nombreDe(r.autor);
   const bar = (l, v, o) => `<div class="mbar"><span>${l}</span><div class="track"><i style="width:${o ? Math.min(100, v / o * 100) : 0}%"></i></div><span class="mono">${fmtN(v,0)}${o ? ` / ${fmtN(o,0)}` : ""} g</span></div>`;
-  openSheet(head + `<div class="meta"><span>por ${esc(autor)}</span><span class="mono">${(pl.comidas||[]).length} comida${(pl.comidas||[]).length===1?"":"s"}</span></div>
+  openSheet(head + `<div class="meta"><span>por ${r.autor === S.uid ? "Tú" : autorLink(r.autor, autor)}</span><span class="mono">${(pl.comidas||[]).length} comida${(pl.comidas||[]).length===1?"":"s"}</span></div>
     ${pl.descripcion ? `<p class="sub">${esc(pl.descripcion)}</p>` : ""}
     <div class="card blk"><div class="cardfoot"><b class="mono" style="font-size:1.25rem">${fmtN(n.k,0)} kcal</b><span class="sub">${pl.kcal ? `objetivo ${fmtN(num(pl.kcal),0)} kcal` : ""}</span></div>
       ${bar("Proteína", n.p, t.p)}${bar("Carbohidratos", n.c, t.c)}${bar("Grasa", n.g, t.g)}
       <div class="sub">Estimación con valores medios por 100 g.</div></div>
     ${(pl.comidas||[]).map(comidaHTML).join("")}
     ${r.autor === S.uid ? `<div class="blk"><button class="btn" data-planedit="${id}">Editar dieta</button></div>`
-      : canSave() ? `<div class="blk"><button class="btn" data-plancopy="${id}">Copiar a mis dietas</button></div>` : ""}`);
+      : canSave() ? `<div class="blk"><button class="btn" data-plancopy="${id}">Copiar a mis dietas</button></div>` : ""}
+    ${r.publica ? resenasHTML(id, "dieta", r.autor) : ""}`);
 }
 function ingRow(ing, i, j){
   const a = alim(ing.alimentoId);
@@ -1261,6 +1405,141 @@ function recetaAComida(rc){
   return {id:uidGen(), momento:rc.momento, nombre:rc.n, ingredientes, pasosTxt:[...notas, ...rc.pasos].join("\n"), foto:null};
 }
 
+
+/* ---------- comunidad: vistas ---------- */
+function resenasHTML(itemId, tipo, autorId){
+  const l = resenasDe(itemId), med = mediaDe(itemId), mia = S.resenas[S.uid]?.items?.[itemId];
+  const puede = comunidadActiva() && autorId !== S.uid, sel = S.estrellaSel ?? mia?.estrellas ?? 0;
+  return `<section class="blk"><h4>Valoraciones${med ? ` · ★ ${fmtN(med.m, 1)} de 5 (${med.n})` : ""}</h4>
+    ${puede ? `<div class="card" style="gap:8px"><div class="sub">${mia ? "Tu valoración" : "¿La has probado? Valórala"}</div>
+      <div class="stars-in" role="group" aria-label="Estrellas">${[1,2,3,4,5].map(n => `<button class="star" data-star="${n}" aria-pressed="${sel >= n}" aria-label="${n} de 5">★</button>`).join("")}</div>
+      <textarea id="res-txt" rows="2" maxlength="400" placeholder="Qué te ha parecido (opcional)">${esc(mia?.texto || "")}</textarea>
+      <div class="inrow" style="flex-wrap:wrap"><button class="btn sm pri" data-saveres="${itemId}" data-tipo="${tipo}">${mia ? "Actualizar" : "Publicar valoración"}</button>${mia ? `<button class="btn sm ghost" data-delres="${itemId}" data-tipo="${tipo}">Borrar mi valoración</button>` : ""}</div></div>`
+      : S.guest ? `<div class="notice">Las valoraciones necesitan cuenta y no están disponibles en la versión de prueba.</div>` : ""}
+    <div class="list" style="margin-top:8px">${l.map(r => `<div class="resena"><div class="cardfoot"><button class="lnk who2" data-perfil="${r.uid}">${avatarDe(r.uid, 24)}<span>${esc(nombreDe(r.uid))}</span></button><span class="mono stars">${estrellasTxt(r.estrellas)}</span></div>${r.texto ? `<div>${esc(r.texto)}</div>` : ""}<div class="sub">${esc(new Date(r.fecha).toLocaleDateString("es-ES"))}</div></div>`).join("") || `<div class="sub">Todavía nadie la ha valorado.</div>`}</div></section>`;
+}
+function vComunidad(){
+  const seg = `<div class="sect-h"><h2>Comunidad</h2></div><div class="seg s4" role="group" aria-label="Sección de comunidad">${[["explorar","Explorar"],["fotos","Progresos"],["personas","Personas"],["perfil","Mi perfil"]].map(([k,l]) => `<button data-cmseg="${k}" aria-pressed="${S.comSeg===k}">${l}</button>`).join("")}</div>`;
+  const aviso = S.guest ? `<div class="notice" style="margin-bottom:12px">En la versión de prueba la comunidad no está conectada: tu perfil y tus fotos se guardan solo en este navegador.</div>` : "";
+  if (!S.ready) return seg + notReady();
+  return seg + aviso + (S.comSeg === "explorar" ? vExplorar() : S.comSeg === "fotos" ? vFeedFotos() : S.comSeg === "personas" ? vPersonas() : vMiPerfil());
+}
+function vExplorar(){
+  const x = S.ex, chip = (k, v, l) => `<button class="chip" data-exf="${k}" data-v="${v}" aria-pressed="${x[k] === v}">${esc(l)}</button>`;
+  let html = `<input class="search" id="exq" type="search" placeholder="Buscar rutinas y dietas" value="${esc(x.q)}" aria-label="Buscar en la comunidad">
+    <div class="chips" role="group" aria-label="Tipo y orden">${[["todo","Todo"],["rutinas","Rutinas"],["dietas","Dietas"]].map(([v,l]) => chip("tipo", v, l)).join("")}${[["valor","Mejor valoradas"],["recientes","Más recientes"]].map(([v,l]) => chip("orden", v, l)).join("")}</div>`;
+  if (x.tipo !== "dietas") html += `<div class="chips" role="group" aria-label="Nivel" style="padding-top:0">${chip("nivel", "", "Cualquier nivel")}${Object.entries(LEVELS).map(([k, L]) => chip("nivel", k, L.label)).join("")}</div>
+    <div class="chips" role="group" aria-label="Músculo" style="padding-top:0">${chip("grupo", "", "Cualquier músculo")}${GRUPOS.map(g => chip("grupo", g, g)).join("")}</div>
+    <div class="chips" role="group" aria-label="Material" style="padding-top:0">${chip("mat", "", "Cualquier material")}${EQUIPOS.filter(e => e !== "Todo").map(g => chip("mat", g, g)).join("")}</div>`;
+  if (x.tipo !== "rutinas") html += `<div class="chips" role="group" aria-label="Objetivo" style="padding-top:0">${chip("obj", "", "Cualquier objetivo")}${Object.entries(OBJ).map(([k, l]) => chip("obj", k, l)).join("")}</div>`;
+  const nq = normTxt(x.q.trim()), fRut = x.nivel || x.grupo || x.mat;
+  const rut = x.tipo === "dietas" || (x.tipo === "todo" && x.obj) ? [] : Object.values(allRutinas()).filter(r => (r.publica || r.oficial) &&
+    (!x.nivel || r.nivel === x.nivel) && (!x.grupo || musculos(r).includes(x.grupo)) &&
+    (!x.mat || (r.ejercicios || []).some(e => exById(e.ejId)?.tipoEquipo === x.mat)) &&
+    (!nq || normTxt([r.nombre, r.descripcion, ...musculos(r)].join(" ")).includes(nq))).map(r => ({k:"r", r}));
+  const die = x.tipo === "rutinas" || (x.tipo === "todo" && fRut) ? [] : Object.values(allPlanes()).filter(r => r.publica &&
+    (!x.obj || r.objetivo === x.obj) && (!nq || normTxt([r.nombre, r.descripcion, OBJ[r.objetivo]].join(" ")).includes(nq))).map(r => ({k:"d", r}));
+  const items = [...rut, ...die];
+  items.sort(x.orden === "valor"
+    ? (a, b) => ((mediaDe(b.r.id)?.m || 0) - (mediaDe(a.r.id)?.m || 0)) || ((mediaDe(b.r.id)?.n || 0) - (mediaDe(a.r.id)?.n || 0)) || ((b.r.actualizada || 0) - (a.r.actualizada || 0))
+    : (a, b) => (b.r.actualizada || 0) - (a.r.actualizada || 0));
+  return html + `<div class="sub" style="margin-bottom:8px">${items.length} resultado${items.length === 1 ? "" : "s"}</div>
+    <div class="list">${items.map(i => i.k === "r" ? rutinaCard(i.r) : dietaCard(i.r)).join("") || `<div class="empty"><strong>Sin resultados</strong>Prueba a quitar algún filtro.</div>`}</div>`;
+}
+function vFeedFotos(){
+  const sig = new Set(siguiendo()), todas = fotosPublicas();
+  const l = S.fotoFiltro === "siguiendo" ? todas.filter(f => sig.has(f.uid) || f.uid === S.uid) : todas;
+  return `<div class="chips" role="group" aria-label="Filtrar progresos" style="padding-top:0">${[["todos","Todos"],["siguiendo","Personas que sigo"]].map(([k,l]) => `<button class="chip" data-fotof="${k}" aria-pressed="${S.fotoFiltro===k}">${l}</button>`).join("")}</div>
+    <div class="list">${l.map(f => `<article class="card"><div class="cardfoot"><button class="lnk who2" data-perfil="${f.uid}">${avatarDe(f.uid, 32)}<span>${esc(nombreDe(f.uid))}</span></button><span class="sub">${esc(fmtFecha(f.fecha, {day:"numeric", month:"short", year:"numeric"}))}</span></div>
+      <button class="fotobig" data-verfoto="${f.uid}|${f.id}" aria-label="Ver foto en grande"><img data-src-foto="${f.uid}|${f.id}" alt="Foto de progreso de ${esc(nombreDe(f.uid))}"></button>
+      ${f.nota ? `<div>${esc(f.nota)}</div>` : ""}${f.peso ? `<div class="sub mono">${fmtN(f.peso)} kg</div>` : ""}</article>`).join("")
+      || `<div class="empty"><strong>Sin fotos públicas</strong>${S.fotoFiltro === "siguiendo" ? "Las personas que sigues aún no han publicado fotos." : "Las fotos de progreso que se marquen como públicas aparecerán aquí."}<button class="btn pri" data-cmseg="perfil">Subir la mía</button></div>`}</div>`;
+}
+function vPersonas(){
+  if (S.guest) return `<div class="empty"><strong>Disponible con cuenta</strong>Cuando la app tenga cuentas, aquí verás a las demás personas y podrás seguirlas.</div>`;
+  const ids = new Set([...Object.keys(S.perfiles), ...Object.keys(S.fotosIdx), ...Object.values(S.publicas).map(r => r.autor), ...Object.keys(S.dietasIdx)]);
+  ["oficial", "local", S.uid].forEach(x => ids.delete(x));
+  const sig = siguiendo();
+  const l = [...ids].sort((a, b) => (sig.includes(b) - sig.includes(a)) || nombreDe(a).localeCompare(nombreDe(b)));
+  return `<div class="list">${l.map(uid => { const p = S.perfiles[uid], sg = sig.includes(uid);
+    return `<div class="prow2"><button class="who2 lnk" data-perfil="${uid}" style="flex:1;min-width:0;text-decoration:none">${avatarDe(uid, 44)}<span class="t"><span class="n" style="font-weight:600">${esc(nombreDe(uid))}</span><span class="m">${p?.publico ? esc(p.bio || "Perfil público") : "Perfil privado"} · ${seguidoresDe(uid)} ${seguidoresDe(uid) === 1 ? "seguidor" : "seguidores"}</span></span></button>
+      <button class="btn sm ${sg ? "" : "pri"}" data-seguir="${uid}">${sg ? "Siguiendo" : "Seguir"}</button></div>`; }).join("")
+    || `<div class="empty"><strong>Aún no hay nadie más</strong>Cuando otras personas creen su perfil o publiquen rutinas, aparecerán aquí.</div>`}</div>`;
+}
+function perfilHTML(uid){
+  const mio = uid === S.uid, p = (mio ? S.miPerfil : S.perfiles[uid]) || {}, visible = mio || p.publico;
+  const rutPub = Object.values(allRutinas()).filter(r => r.autor === uid && r.publica);
+  const dietPub = Object.values(allPlanes()).filter(r => r.autor === uid && r.publica);
+  const fotos = mio ? misFotos() : fotosPublicas().filter(f => f.uid === uid), sg = siguiendo().includes(uid);
+  const fd = f => esc(fmtFecha(f.fecha, {day:"numeric", month:"short"}));
+  return `<div class="perfil"><div class="banner">${visible && p.banner ? `<img src="${esc(p.banner)}" alt="">` : ""}</div>
+    <div class="phead"><div class="avwrap">${avatarDe(uid, 84)}</div>
+      <div style="padding-bottom:4px">${mio ? (canSave() ? `<button class="btn sm" data-editperfil>Editar perfil</button>` : "") : (comunidadActiva() ? `<button class="btn sm ${sg ? "" : "pri"}" data-seguir="${uid}">${sg ? "Siguiendo" : "Seguir"}</button>` : "")}</div></div>
+    <h2 class="pname">${esc(nombreDe(uid))}</h2>
+    ${mio ? `<span class="tag ${p.publico ? "pub" : ""}">${!S.miPerfil ? "Perfil sin configurar" : p.publico ? "Perfil público" : "Perfil privado"}</span>` : !p.publico ? `<span class="tag">Perfil privado</span>` : ""}
+    ${visible && p.bio ? `<p style="margin:8px 0 0">${esc(p.bio)}</p>` : ""}
+    <div class="pstats">${visible ? `<span>${pl(rutPub.length, "rutina", "rutinas")}</span><span>${pl(dietPub.length, "dieta", "dietas")}</span>` : ""}<span>${pl(seguidoresDe(uid), "seguidor", "seguidores")}</span><span><b>${(S.seguir[uid]?.siguiendo || []).length}</b> siguiendo</span></div></div>
+  <section class="blk"><div class="sect-h" style="margin:0 0 4px"><h2 style="font-size:1.4rem">Fotos de progreso</h2>${mio && canSave() ? `<label class="btn sm pri fotobtn">+ Subir foto<input class="vh" type="file" accept="image/*" data-subirfoto></label>` : ""}</div>
+    ${mio ? `<div class="sub" style="margin-bottom:8px">Cada foto puede ser pública o privada, sea cual sea la privacidad de tu perfil.</div>` : !p.publico && fotos.length ? `<div class="sub" style="margin-bottom:8px">El perfil es privado, pero estas fotos se han compartido como públicas.</div>` : ""}
+    ${fotos.length ? `<div class="pgrid">${fotos.map(f => `<button class="pcell" data-verfoto="${uid}|${f.id}" aria-label="Foto del ${fd(f)}"><img ${mio ? `src="${esc(f.img)}"` : `data-src-foto="${uid}|${f.id}"`} alt=""><span class="pdate">${fd(f)}</span>${mio ? `<span class="tag ${f.publica ? "pub" : ""} pvis">${f.publica ? "Pública" : "Privada"}</span>` : ""}</button>`).join("")}</div>`
+      : `<div class="empty">${mio ? "<strong>Sin fotos todavía</strong>Sube tu primera foto para ver tu cambio con el tiempo. Tú decides si es pública o privada." : "No tiene fotos de progreso públicas."}</div>`}
+  </section>
+  ${!mio && visible && (rutPub.length || dietPub.length) ? `<section class="blk"><h4>Rutinas y dietas públicas</h4><div class="list">${rutPub.map(rutinaCard).join("")}${dietPub.map(dietaCard).join("")}</div></section>` : ""}`;
+}
+function vMiPerfil(){
+  if (!S.uid) return `<div class="notice">Abre la app con tu sesión iniciada para crear tu perfil.</div>`;
+  const aviso = !S.miPerfil && canSave() ? `<div class="notice" style="margin-bottom:12px">Configura tu perfil: foto, banner, una breve presentación y si quieres que sea público o privado. <button class="lnk" data-editperfil>Configurar ahora</button></div>` : "";
+  return aviso + perfilHTML(S.uid);
+}
+function abrirPerfil(uid){
+  if (uid === S.uid){ closeSheet(); S.tab = "comunidad"; S.comSeg = "perfil"; render(); window.scrollTo(0, 0); return; }
+  openSheet(`<button class="btn sm close" data-close>Cerrar</button><div style="clear:both;padding-top:8px">${perfilHTML(uid)}</div>`); hidratarFotos();
+}
+function editarPerfil(){ S.perfilDraft = {...(S.miPerfil || {publico:true, alias:"", bio:"", avatar:null, banner:null})}; renderEditPerfil(); }
+function syncPerfil(){ const d = S.perfilDraft; if (!d || !$("#pform")) return; d.alias = $("#p-alias").value.trim(); d.bio = $("#p-bio").value.trim(); d.publico = $("#pvis-pub").checked; }
+function renderEditPerfil(){
+  const p = S.perfilDraft;
+  openSheet(`<button class="btn sm close" data-close>Cerrar</button><h2>Editar perfil</h2>
+    <div class="perfil blk"><div class="banner">${p.banner ? `<img src="${esc(p.banner)}" alt="Banner">` : ""}</div></div>
+    <div class="inrow" style="flex-wrap:wrap;margin-top:8px"><label class="btn sm fotobtn">${p.banner ? "Cambiar banner" : "Añadir banner"}<input class="vh" type="file" accept="image/*" data-pimg="banner"></label>${p.banner ? `<button class="btn sm ghost" data-pdel="banner">Quitar</button>` : ""}<span class="sub">Formato panorámico 3:1</span></div>
+    <div class="inrow blk" style="flex-wrap:wrap">${p.avatar ? `<img class="av" style="width:72px;height:72px" src="${esc(p.avatar)}" alt="Foto de perfil">` : avatarDe(S.uid, 72)}
+      <label class="btn sm fotobtn">${p.avatar ? "Cambiar foto de perfil" : "Añadir foto de perfil"}<input class="vh" type="file" accept="image/*" data-pimg="avatar"></label>${p.avatar ? `<button class="btn sm ghost" data-pdel="avatar">Quitar</button>` : ""}</div>
+    <form id="pform" class="blk" novalidate>
+      <label class="f">Nombre visible<input id="p-alias" maxlength="40" placeholder="${esc(S.yo?.name || "Tu nombre")}" value="${esc(p.alias || "")}"></label>
+      <label class="f">Sobre ti<textarea id="p-bio" rows="3" maxlength="200" placeholder="Tu objetivo, cuánto llevas entrenando…">${esc(p.bio || "")}</textarea></label>
+      <div class="vis" role="radiogroup" aria-label="Privacidad del perfil">
+        <label><input type="radio" name="pvis" id="pvis-pub" ${p.publico ? "checked" : ""}><b>Público</b><span>Cualquiera ve tu perfil, tu presentación y tu contenido público</span></label>
+        <label><input type="radio" name="pvis" id="pvis-priv" ${!p.publico ? "checked" : ""}><b>Privado</b><span>Solo se ven las fotos que marques como públicas</span></label>
+      </div>
+      ${S.guest ? `<div class="sub">En la versión de prueba el perfil se guarda solo en este navegador.</div>` : ""}
+      <button class="btn pri" type="submit" id="psave">Guardar perfil</button>
+    </form>`);
+}
+function syncFoto(){ const f = S.fotoDraft; if (!f || !$("#fx-fecha")) return; f.fecha = $("#fx-fecha").value || f.fecha; f.peso = num($("#fx-peso").value); f.nota = $("#fx-nota").value.trim(); f.publica = $("#fx-pub").checked; }
+function fotoForm(){
+  const f = S.fotoDraft, nueva = !(S.misFotosPub[f.id] || S.misFotosPriv[f.id]);
+  openSheet(`<button class="btn sm close" data-close>Cerrar</button><h2>${nueva ? "Nueva foto de progreso" : "Foto de progreso"}</h2>
+    <img class="fotofull blk" src="${esc(f.img)}" alt="Foto de progreso">
+    <div class="stack blk" style="gap:12px">
+      <div class="two"><label class="f">Fecha<input type="date" id="fx-fecha" max="${hoyStr()}" value="${esc(f.fecha)}"></label><label class="f">Peso (kg, opcional)<input id="fx-peso" inputmode="decimal" value="${f.peso != null ? esc(String(f.peso).replace(".", ",")) : ""}"></label></div>
+      <label class="f">Nota<textarea id="fx-nota" rows="2" maxlength="300" placeholder="Cómo te ves, qué estás cambiando…">${esc(f.nota || "")}</textarea></label>
+      <div class="vis" role="radiogroup" aria-label="Visibilidad de la foto">
+        <label><input type="radio" name="fxvis" id="fx-priv" ${!f.publica ? "checked" : ""}><b>Privada</b><span>Solo la ves tú</span></label>
+        <label><input type="radio" name="fxvis" id="fx-pub" ${f.publica ? "checked" : ""}><b>Pública</b><span>Aparece en Progresos y en tu perfil</span></label>
+      </div>
+      <div class="sub">La visibilidad de cada foto es independiente de la de tu perfil.${S.guest ? " En la versión de prueba se guarda solo en este navegador." : ""}</div>
+      <button class="btn pri" data-savefoto>${nueva ? "Guardar foto" : "Guardar cambios"}</button>
+      ${nueva ? "" : f._confirm ? `<div class="confirm">¿Borrar esta foto para siempre? <button class="btn sm pri" data-delfoto>Borrar</button><button class="btn sm" data-nodelfoto>Cancelar</button></div>` : `<button class="btn ghost" data-askdelfoto style="color:var(--accent)">Borrar foto</button>`}
+    </div>`);
+}
+async function verFoto(uid, id){
+  const f = (S.fotosIdx[uid]?.fotos || {})[id] || {};
+  openSheet(`<button class="btn sm close" data-close>Cerrar</button><div style="clear:both;padding-top:8px" class="cardfoot"><button class="lnk who2" data-perfil="${uid}">${avatarDe(uid, 36)}<span>${esc(nombreDe(uid))}</span></button><span class="sub">${f.fecha ? esc(fmtFecha(f.fecha, {day:"numeric", month:"long", year:"numeric"})) : ""}</span></div>
+    <img class="fotofull blk" data-src-foto="${uid}|${id}" alt="Foto de progreso de ${esc(nombreDe(uid))}">
+    ${f.nota ? `<p>${esc(f.nota)}</p>` : ""}${f.peso ? `<div class="sub mono">${fmtN(f.peso)} kg</div>` : ""}`);
+  hidratarFotos();
+}
+
 /* ---------- diario: vistas ---------- */
 function vDiario(){
   if (!S.ready || S.dbMissing) return `<div class="sect-h"><h2>Diario</h2></div>` + notReady();
@@ -1438,18 +1717,19 @@ function exDetail(id, rx){
       return rel.length || extra.length ? `<div class="blk"><h4>Variantes y alternativas</h4><div class="chips wrap" style="padding:0">${rel.map(x => `<button class="chip" data-ex="${x.id}">${esc(x.nombre)} ›</button>`).join("")}${extra.map(v => `<span class="tag">${esc(v)}</span>`).join("")}</div></div>` : ""; })()}`);
 }
 function rutinaDetail(id){
-  const r = allRutinas()[id]; if (!r) return;
-  const autor = r.autor === S.uid ? "Tú" : r.oficial ? "FIT Community" : (names[r.autor]?.name || "Usuario de la comunidad");
+  const r = allRutinas()[id]; if (!r) return; S.estrellaSel = null;
+  const autor = r.autor === S.uid ? "Tú" : r.oficial ? "FIT Community" : nombreDe(r.autor);
   openSheet(`<button class="btn sm close" data-close>Cerrar</button>
     ${lvl(r.nivel)}
     <h2 style="margin-top:8px">${esc(r.nombre)}</h2>
-    <div class="meta"><span>por ${esc(autor)}</span><span class="mono">~${duracion(r)} min</span><span>${esc(musculos(r).join(" · "))}</span></div>
+    <div class="meta"><span>por ${r.autor === S.uid ? "Tú" : autorLink(r.autor, autor)}</span><span class="mono">~${duracion(r)} min</span><span>${esc(musculos(r).join(" · "))}</span></div>
     ${r.descripcion?`<p class="sub">${esc(r.descripcion)}</p>`:""}
     ${(r.recomendaciones||[]).length ? `<section class="card blk"><h3>Recomendaciones</h3><ul class="dots">${r.recomendaciones.map(t => `<li>${esc(t)}</li>`).join("")}</ul></section>` : ""}
     <div class="list blk">${(r.ejercicios||[]).map((e,i)=>{ const x = exById(e.ejId);
       return `<button class="row" data-rx="${id}" data-rxi="${i}"><span class="glyph mono">${String(i+1).padStart(2,"0")}</span>
         <span class="t"><span class="n">${esc(x?.nombre||e.nombre)}</span><span class="m mono">${esc(e.series||"—")} × ${esc(e.reps||"—")}${e.peso?` · ${esc(e.peso)} kg`:""}${e.descanso?` · ${esc(e.descanso)} s`:""}${e.rir?` · RIR ${esc(e.rir)}`:""}</span></span><span aria-hidden="true" style="color:var(--muted)">›</span></button>`;}).join("")}</div>
-    ${canSave() ? `<div class="blk inrow" style="flex-wrap:wrap"><button class="btn pri" data-trainnow="${id}">Entrenar hoy</button>${r.autor !== S.uid ? `<button class="btn" data-copy="${id}">Copiar a mis rutinas</button>` : ""}</div>` : ""}`);
+    ${canSave() ? `<div class="blk inrow" style="flex-wrap:wrap"><button class="btn pri" data-trainnow="${id}">Entrenar hoy</button>${r.autor !== S.uid ? `<button class="btn" data-copy="${id}">Copiar a mis rutinas</button>` : ""}</div>` : ""}
+    ${r.publica || r.oficial ? resenasHTML(id, "rutina", r.autor) : ""}`);
 }
 function picker(){
   openSheet(`<button class="btn sm close" data-close>Cerrar</button><h2>Añadir ejercicio</h2>
@@ -1478,6 +1758,35 @@ document.addEventListener("click", async ev => {
   if (d.tab){ S.tab = d.tab; S.confirmDel = null; try{localStorage.setItem("fc_tab", S.tab)}catch{}; render(); window.scrollTo(0,0); return; }
   if ("close" in d) return closeSheet();
   if ("export" in d){ exportar(); return; }
+  /* comunidad */
+  if (d.cmseg){ closeSheet(); S.tab = "comunidad"; S.comSeg = d.cmseg; render(); window.scrollTo(0,0); return; }
+  if (d.exf){ S.ex[d.exf] = d.v; S._exFocus = false; render(); return; }
+  if (d.fotof){ S.fotoFiltro = d.fotof; render(); return; }
+  if (d.perfil){ abrirPerfil(d.perfil); return; }
+  if (d.seguir){ t.disabled = true; try { await toggleSeguir(d.seguir); } catch { toast("No se pudo actualizar"); } if ($("#sheet")) abrirPerfil(d.seguir); render(); return; }
+  if ("editperfil" in d){ editarPerfil(); return; }
+  if (d.pdel){ syncPerfil(); S.perfilDraft[d.pdel] = null; renderEditPerfil(); return; }
+  if (d.verfoto){ const [u, i] = d.verfoto.split("|"); if (u === S.uid){ const f = misFotos().find(x => x.id === i); if (!f) return; S.fotoDraft = {...f}; fotoForm(); } else verFoto(u, i); return; }
+  if ("askdelfoto" in d){ syncFoto(); S.fotoDraft._confirm = true; fotoForm(); return; }
+  if ("nodelfoto" in d){ syncFoto(); S.fotoDraft._confirm = false; fotoForm(); return; }
+  if ("delfoto" in d){ try { await borrarFoto(S.fotoDraft.id); toast("Foto borrada"); closeSheet(); } catch { toast("No se pudo borrar la foto"); } render(); return; }
+  if ("savefoto" in d){
+    syncFoto(); const f = S.fotoDraft;
+    if (!f.fecha || f.fecha > hoyStr()){ toast("Elige una fecha válida"); return; }
+    t.disabled = true; t.textContent = "Guardando…";
+    try { await guardarFoto(f); toast(f.publica ? "Foto guardada y compartida" : "Foto guardada en privado"); closeSheet(); S.tab = "comunidad"; S.comSeg = "perfil"; render(); }
+    catch (e) { t.disabled = false; t.textContent = "Guardar foto"; toast(e?.code === "espacio" ? "No queda espacio en este navegador. Borra alguna foto o exporta tus datos." : e?.code === "quota_exceeded" ? "No queda espacio para más fotos" : "No se pudo guardar la foto"); }
+    return;
+  }
+  if (d.star){ S.estrellaSel = +d.star; document.querySelectorAll(".star").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.star <= S.estrellaSel))); return; }
+  if (d.saveres){
+    const est = S.estrellaSel ?? S.resenas[S.uid]?.items?.[d.saveres]?.estrellas;
+    if (!est){ toast("Elige de 1 a 5 estrellas"); return; }
+    t.disabled = true;
+    try { await guardarResena(d.saveres, d.tipo, est, ($("#res-txt")?.value || "").trim()); toast("Valoración publicada"); } catch { toast("No se pudo guardar la valoración"); }
+    d.tipo === "rutina" ? rutinaDetail(d.saveres) : planDetail(d.saveres); render(true); return;
+  }
+  if (d.delres){ try { await borrarResena(d.delres); toast("Valoración borrada"); } catch { toast("No se pudo borrar"); } d.tipo === "rutina" ? rutinaDetail(d.delres) : planDetail(d.delres); return; }
   /* qué cocino y precios */
   if (d.hav){ if (!S.have.includes(d.hav)) S.have.push(d.hav); guardarDespensa(); render(); const i = $("#dq"); if (i){ i.focus(); } return; }
   if (d.unhav){ S.have = S.have.filter(x => x !== d.unhav); guardarDespensa(); render(); return; }
@@ -1567,6 +1876,7 @@ document.addEventListener("input", ev => {
   if (t.id === "pq"){ $("#plist").innerHTML = pickerList(t.value); return; }
   if (t.id === "iq"){ $("#ilist").innerHTML = ingList(t.value); return; }
   if (t.id === "pq2"){ $("#p2list").innerHTML = preciosList(t.value); return; }
+  if (t.id === "exq"){ S.ex.q = t.value; S._exFocus = true; render(); return; }
   if (t.id === "basicos"){ S.basicos = t.checked; guardarDespensa(); render(); return; }
   if (t.id === "dq"){ const nq = normTxt(t.value.trim()); $("#dres").innerHTML = !nq ? "" : ALIMENTOS.filter(a => !S.have.includes(a.id) && normTxt(a.n).includes(nq)).slice(0, 12).map(a => `<button class="chip" data-hav="${a.id}">+ ${esc(a.n)}</button>`).join("") || `<span class="sub">No está en la lista de alimentos.</span>`; return; }
   if (S.dDraft && t.closest("#dform")){ if (t.type === "file") return; syncDieta(); refreshDietaTotals(); return; }
@@ -1600,6 +1910,28 @@ document.addEventListener("submit", async ev => {
     btn.disabled = false; btn.textContent = "Guardar rutina";
     toast(e?.code === "invalid_argument" ? "Tu acceso no permite guardar rutinas" : "No se pudo guardar. Inténtalo de nuevo.");
   }
+});
+document.addEventListener("change", async ev => {
+  const t = ev.target; if (!t.files?.[0]) return;
+  if (t.dataset.pimg){
+    syncPerfil(); const k = t.dataset.pimg;
+    try { S.perfilDraft[k] = await reducirImg(await leerArchivo(t.files[0]), IMG[k]); renderEditPerfil(); } catch { toast("No se pudo leer la imagen"); }
+  } else if (t.dataset.subirfoto !== undefined){
+    try {
+      const img = await reducirImg(await leerArchivo(t.files[0]), IMG.foto);
+      S.fotoDraft = {id:uidGen(), img, fecha:hoyStr(), peso:diaDe(hoyStr()).peso ?? null, nota:"", publica:false, creada:Date.now()};
+      fotoForm();
+    } catch { toast("No se pudo leer la imagen"); }
+    t.value = "";
+  }
+});
+document.addEventListener("submit", async ev => {
+  if (ev.target.id !== "pform") return;
+  ev.preventDefault(); syncPerfil();
+  const pf = {...S.perfilDraft, actualizado:Date.now()}, btn = $("#psave");
+  btn.disabled = true; btn.textContent = "Guardando…";
+  try { await guardarPerfil(pf); S.miPerfil = pf; toast("Perfil guardado"); closeSheet(); S.tab = "comunidad"; S.comSeg = "perfil"; render(); }
+  catch (e) { btn.disabled = false; btn.textContent = "Guardar perfil"; toast(e?.code === "espacio" ? "No queda espacio en este navegador" : "No se pudo guardar el perfil"); }
 });
 document.addEventListener("change", async ev => {
   const t = ev.target; if (!t.dataset || t.dataset.foto === undefined || !t.files?.[0]) return;
