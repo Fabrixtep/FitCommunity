@@ -19,7 +19,7 @@
 :root{
   --bg:#f3f4f2; --surface:#ffffff; --sunk:#e8eae6; --fg:#16181a; --muted:#5d6560; --line:#d5d9d3;
   --accent:#c8322b; --accent-fg:#ffffff;
-  --lv1:#2f8a4c; --lv2:#c99a0e; --lv3:#2457b8; --warn:#8a6206;
+  --lv1:#2f8a4c; --lv2:#c99a0e; --lv3:#2457b8; --warn:#8a6206; --mn:#d9ddd6; --mb:#e9ebe7; --ms:#eda39e; --mline:#b9bfb6;
   --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
   --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
@@ -27,10 +27,10 @@
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#121413; --surface:#1b1e1c; --sunk:#232724; --fg:#eef0ec; --muted:#9ba49d; --line:#2f3430;
-  --accent:#e5534b; --accent-fg:#160807; --lv1:#4fbf72; --lv2:#e6bb37; --lv3:#6b9cf2; --warn:#e6bb37; color-scheme:dark}}
+  --accent:#e5534b; --accent-fg:#160807; --lv1:#4fbf72; --lv2:#e6bb37; --lv3:#6b9cf2; --warn:#e6bb37; --mn:#3a403c; --mb:#2c312e; --ms:#8e3d38; --mline:#555c57; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#121413; --surface:#1b1e1c; --sunk:#232724; --fg:#eef0ec; --muted:#9ba49d; --line:#2f3430;
-  --accent:#e5534b; --accent-fg:#160807; --lv1:#4fbf72; --lv2:#e6bb37; --lv3:#6b9cf2; --warn:#e6bb37; color-scheme:dark}
+  --accent:#e5534b; --accent-fg:#160807; --lv1:#4fbf72; --lv2:#e6bb37; --lv3:#6b9cf2; --warn:#e6bb37; --mn:#3a403c; --mb:#2c312e; --ms:#8e3d38; --mline:#555c57; color-scheme:dark}
 *{box-sizing:border-box}
 html,body{background:var(--bg);color:var(--fg)}
 body{font:16px/1.5 var(--body);padding-inline:16px;padding-block:0 96px}
@@ -178,6 +178,17 @@ a.chip{text-decoration:none;color:var(--fg)}
 .lesnote{display:grid;gap:4px;padding:10px 12px;border-radius:8px;background:var(--sunk);font-size:.9rem;border-left:3px solid var(--warn)}
 .lesnote.no{border-left-color:var(--accent)} .lesnote.ok{border-left-color:var(--lv1)}
 .seg.s4 button{font-size:.8rem;padding:8px 2px}
+.thumb{flex:none;width:58px;height:60px;border-radius:8px;background:var(--sunk);display:grid;place-items:center;padding:3px 2px}
+.thumb svg{width:100%;height:100%;display:block}
+.cuerpo path{stroke:var(--mline);stroke-width:.5;stroke-linejoin:round}
+.cuerpo .mn{fill:var(--mn)} .cuerpo .mb{fill:var(--mb)} .cuerpo .mp{fill:var(--accent)} .cuerpo .ms{fill:var(--ms)}
+.cuerpo text{font-family:var(--body);font-size:9px;fill:var(--muted)}
+.mapa{margin:14px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 10px 10px}
+.mapa svg{width:100%;max-width:340px;height:auto;display:block;margin:0 auto}
+.mapa figcaption{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 16px;margin-top:6px;font-size:.85rem;color:var(--muted)}
+.ley{display:inline-flex;align-items:center;gap:6px}
+.ley i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.ley i.mp{background:var(--accent)} .ley i.ms{background:var(--ms)}
 .guestbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 12px;margin-bottom:14px;border-radius:8px;background:var(--sunk);font-size:.88rem;color:var(--muted)}
 .guestbar b{color:var(--fg)}
 .guestbar.warn{border-left:3px solid var(--accent)}
@@ -676,6 +687,97 @@ async function guardarPrecio(e){
   await S.db.doc(`precios/${S.uid}`).set({items:keep});
 }
 
+/* ---------- mapa muscular (figura de frente y de espaldas) ---------- */
+/* Coordenadas de medio cuerpo (lado derecho de la imagen); "c" = central, se dibuja una vez. viewBox de cada vista: 100 × 205. */
+const CUERPO = {
+  frente: [
+    ["base","c","M41 10a9 10 0 1 0 18 0a9 10 0 1 0-18 0Z"],
+    ["cuello","c","M45 19h10l1.5 10h-13Z"],
+    ["trap-sup","m","M54.5 22Q61 28 69 31.5L56 32Z"],
+    ["delt-ant","m","M64 31Q71 30 73.5 35Q73 41 69.5 46Q66.5 40 62 36Z"],
+    ["delt-lat","m","M70 31.5Q78 34 78.5 43Q77 46 74.5 46Q75 39 70 32Z"],
+    ["pecho","m","M51 34Q57 32 63 35Q67.5 39 69 45Q64 51 51 50Z"],
+    ["serrato","m","M65.5 49Q68 48 69.5 51L68 60L64.5 58Z"],
+    ["abs","c","M44 51Q50 49 56 51L57 86Q50 90 43 86Z"],
+    ["oblicuos","m","M57 52Q63 54 66 60Q66.5 74 62 86L57.5 86Z"],
+    ["biceps","m","M69.5 47.5Q75 47 77 52Q78 60 75 67Q71 68 69 66Q67.5 57 69.5 47.5Z"],
+    ["antebrazo","m","M69.5 68.5Q75.5 68 77.5 71Q79 82 75.5 96L71 96Q68 84 69.5 68.5Z"],
+    ["base","m","M71 97.5h4.5Q78 103 74 109Q70 108 70.5 103Z"],
+    ["flexores","m","M51.5 88L61 86.5L57.5 97L52 97Z"],
+    ["glut-med","m","M62.5 86Q67 88 67.5 96L63.5 104L60.5 96Z"],
+    ["quads","m","M57.5 98L60.5 96.5L64 104.5Q67 118 64 140Q60 143 56 140Q53.5 124 53 106Z"],
+    ["aductores","m","M50.5 98.5L52.5 98Q53 118 55.5 134Q52 132 50.5 124Z"],
+    ["base","m","M55.5 141.5Q60 144 64 141.5L64.5 150Q60 152 55.5 150Z"],
+    ["tibial","m","M58.5 151.5Q62.5 150 64.5 152Q65 168 61.5 188L59 188Q56.5 170 58.5 151.5Z"],
+    ["gemelos","m","M55 152L58 151.5Q56.5 166 58 180L56 180Q53.5 166 55 152Z"],
+    ["base","m","M56.5 189.5h6Q66.5 196 64 199Q58 200 55.5 197Z"]
+  ],
+  espalda: [
+    ["base","c","M41 10a9 10 0 1 0 18 0a9 10 0 1 0-18 0Z"],
+    ["cuello","c","M45 19h10l1.5 8h-13Z"],
+    ["trap-sup","m","M50 23L54.5 22Q61 28 69 31.5L57 34L50 33Z"],
+    ["trap-mid","m","M50 33L57 34.5L60 44L55 58L50 64Z"],
+    ["delt-post","m","M64 31.5Q71 30 73.5 35Q73 41 69.5 46Q66 40 62.5 36Z"],
+    ["delt-lat","m","M70 31.5Q78 34 78.5 43Q77 46 74.5 46Q75 39 70 32Z"],
+    ["rotador","m","M58.5 36L64 36.5Q67 41 66.5 47L60.5 46Z"],
+    ["dorsal","m","M60.5 47.5L67 48Q69 60 64 76L56 72L55.5 60Z"],
+    ["lumbar","m","M50.5 65L54.5 60.5L56 72.5L56.5 86L50.5 87Z"],
+    ["triceps","m","M69.5 47.5Q75 47 77 52Q78 60 75 67Q71 68 69 66Q67.5 57 69.5 47.5Z"],
+    ["antebrazo","m","M69.5 68.5Q75.5 68 77.5 71Q79 82 75.5 96L71 96Q68 84 69.5 68.5Z"],
+    ["base","m","M71 97.5h4.5Q78 103 74 109Q70 108 70.5 103Z"],
+    ["glut-med","m","M57 78L64 77.5Q67.5 84 67 92L59.5 88Z"],
+    ["glut-max","m","M50.5 88.5L59 89L67 93Q68.5 102 63 107Q56 109 50.5 106Z"],
+    ["isquios","m","M52.5 108Q59 109.5 64 108Q66.5 124 63.5 141Q59.5 143 56 141Q52 126 52.5 108Z"],
+    ["aductores","m","M50.5 107L52 108Q51.5 120 54.5 132Q51.5 130 50.5 122Z"],
+    ["base","m","M55.5 142.5Q60 145 64 142.5L64.5 150Q60 152 55.5 150Z"],
+    ["gemelos","m","M55.5 151.5Q60 148 64.5 152Q66 164 61.5 175L57.5 175Q53.5 164 55.5 151.5Z"],
+    ["soleo","m","M57.5 176.5h4Q61.5 184 61 188.5L58 188.5Q57.5 184 57.5 176.5Z"],
+    ["base","m","M56.5 189.5h6Q66.5 196 64 199Q58 200 55.5 197Z"]
+  ]
+};
+const REGLAS_MUSCULO = [
+  [/biceps femoral|semitend|semimembr|isquio/, ["isquios"]],
+  [/pectoral/, ["pecho"]],
+  [/deltoides anterior/, ["delt-ant"]], [/deltoides lateral/, ["delt-lat"]], [/deltoides posterior/, ["delt-post"]],
+  [/^deltoides$/, ["delt-ant","delt-lat","delt-post"]],
+  [/braquiorradial|antebrazo|extensores de la muneca|flexores de la muneca/, ["antebrazo"]],
+  [/triceps|ancone/, ["triceps"]], [/biceps|braquial/, ["biceps"]],
+  [/recto abdominal|transverso|^core|abdomen/, ["abs"]], [/oblicuo/, ["oblicuos"]],
+  [/cuadriceps|vasto|recto femoral/, ["quads"]], [/aductor/, ["aductores"]],
+  [/gluteo mayor/, ["glut-max"]], [/gluteo medio|gluteo menor|tensor de la fascia|rotadores de cadera/, ["glut-med"]],
+  [/gastrocnemio|gemelo/, ["gemelos"]], [/soleo/, ["soleo"]], [/tibial|peroneo|estabilizadores del tobillo/, ["tibial"]],
+  [/trapecio superior|elevador de la escapula/, ["trap-sup"]],
+  [/trapecio medio|trapecio inferior|romboides|^trapecio/, ["trap-mid"]],
+  [/dorsal|redondo mayor/, ["dorsal"]], [/infraespinoso|redondo menor|manguito|supraespinoso/, ["rotador"]],
+  [/erectores|cuadrado lumbar|columna/, ["lumbar"]], [/serrato/, ["serrato"]],
+  [/flexores de cadera|psoas/, ["flexores"]], [/cuello/, ["cuello"]]
+];
+const VISTA_FRENTE = new Set(["pecho","delt-ant","biceps","abs","oblicuos","quads","flexores","tibial","serrato"]);
+function regionesDe(nombre){
+  const n = normTxt(nombre), out = new Set();
+  for (const [re, ks] of REGLAS_MUSCULO) if (re.test(n)){ ks.forEach(k => out.add(k)); break; }
+  return out;
+}
+const _mapCache = {};
+function mapaMuscular(e){
+  if (_mapCache[e.id]) return _mapCache[e.id];
+  const p = new Set(), s = new Set();
+  (e.musculosPrincipales || []).forEach(m => regionesDe(m).forEach(k => p.add(k)));
+  (e.musculosSecundarios || []).forEach(m => regionesDe(m).forEach(k => { if (!p.has(k)) s.add(k); }));
+  return (_mapCache[e.id] = {p, s});
+}
+function vistaSVG(nombre, mm, dx){
+  const cls = k => k === "base" ? "mb" : mm.p.has(k) ? "mp" : mm.s.has(k) ? "ms" : "mn";
+  const half = CUERPO[nombre].filter(x => x[1] === "m").map(([k,,d]) => `<path class="${cls(k)}" d="${d}"/>`).join("");
+  const center = CUERPO[nombre].filter(x => x[1] === "c").map(([k,,d]) => `<path class="${cls(k)}" d="${d}"/>`).join("");
+  return `<g transform="translate(${dx} 0)">${center}<g>${half}</g><g transform="translate(100 0) scale(-1 1)">${half}</g></g>`;
+}
+function cuerpoSVG(e, grande){
+  const mm = mapaMuscular(e);
+  const lbl = grande ? `<text x="50" y="214" text-anchor="middle">Delante</text><text x="150" y="214" text-anchor="middle">Detrás</text>` : "";
+  return `<svg class="cuerpo${grande ? " grande" : ""}" viewBox="0 0 200 ${grande ? 220 : 204}" role="img" aria-label="Músculos que trabaja: ${esc([...(e.musculosPrincipales||[])].join(", "))}">${vistaSVG("frente", mm, 0)}${vistaSVG("espalda", mm, 100)}${lbl}</svg>`;
+}
+
 /* ---------- diario: datos ---------- */
 function diaDe(f){ return S.dias[f] ? JSON.parse(JSON.stringify(S.dias[f])) : {fecha:f, peso:null, energia:null, molestias:"", notas:"", entrenos:[]}; }
 async function guardarDia(f, patch){
@@ -791,7 +893,7 @@ const ESTADO_LES = {rec:["ok","Recomendado"], prec:["pr","Precaución"], evitar:
 function libRow(e, extra){
   const li = S.lesiones.length ? lesionInfo().m[e.id] : null;
   return `<button class="row${e.varianteDe && !extra ? " var" : ""}" data-ex="${e.id}">
-      <span class="glyph">${esc(e.grupo).slice(0,3)}</span>
+      <span class="thumb" aria-hidden="true">${cuerpoSVG(e)}</span>
       <span class="t"><span class="n">${esc(e.nombre)}</span><span class="m${extra ? " wrap" : ""}">${extra ? esc(extra) : `${e.varianteDe ? "Variante · " : ""}${esc(e.enfoque || (e.musculosPrincipales||[]).join(", "))} · ${esc(e.tipoEquipo || e.equipo)}`}</span></span>
       ${li && !extra ? `<span class="tag ${ESTADO_LES[li.st][0]}">${ESTADO_LES[li.st][1]}</span>` : `<span aria-hidden="true" style="color:var(--muted)">›</span>`}</button>`;
 }
@@ -1322,6 +1424,7 @@ function exDetail(id, rx){
     ${(() => { const li = S.lesiones.length ? lesionInfo() : null, x = li && li.m[e.id]; if (!x) return "";
       const cls = ESTADO_LES[x.st][0], cab = {rec:"Recomendado para ti", prec:"Hazlo con precaución", evitar:"Mejor evitar por ahora"}[x.st];
       return `<div class="lesnote ${cls} blk"><b>${cab}</b>${x.notas.map(n => `<span>${esc(n.l)}: ${esc(n.txt)}</span>`).join("")}</div>`; })()}
+    <figure class="mapa">${cuerpoSVG(e, true)}<figcaption><span class="ley"><i class="mp"></i>Trabaja sobre todo</span>${mapaMuscular(e).s.size ? `<span class="ley"><i class="ms"></i>También trabaja</span>` : ""}</figcaption></figure>
     ${rx ? `<div class="rx blk"><div><small>Series</small><span class="mono">${esc(rx.series||"—")}</span></div><div><small>Reps</small><span class="mono">${esc(rx.reps||"—")}</span></div><div><small>Peso</small><span class="mono">${rx.peso?esc(rx.peso)+" kg":"—"}</span></div><div><small>Descanso</small><span class="mono">${rx.descanso?esc(rx.descanso)+" s":"—"}</span></div></div>${rx.rir?`<div class="sub" style="margin-top:6px">RIR objetivo: <span class="mono">${esc(rx.rir)}</span></div>`:""}${rx.notas?`<div class="notice" style="margin-top:8px">${esc(rx.notas)}</div>`:""}` : ""}
     <div class="blk"><a class="video" href="${esc(video)}" target="_blank" rel="noopener"><span class="play"></span><span>Ver vídeo demostrativo<br><span class="sub" style="font-weight:400">${e.videoUrl?"Recurso verificado":"Abre una búsqueda en YouTube"}</span></span></a></div>
     ${e.enfoque ? `<div class="blk"><h4>Músculo objetivo</h4><div style="font-weight:600;font-size:1.05rem">${esc(e.enfoque)}</div></div>` : ""}
@@ -1356,7 +1459,7 @@ function picker(){
 }
 function pickerList(q){
   const nq = normTxt(q.trim());
-  const row = e => `<button class="row" data-add="${e.id}"><span class="glyph">${esc(e.grupo).slice(0,3)}</span><span class="t"><span class="n">${esc(e.nombre)}</span><span class="m">${esc(e.enfoque || "")} · ${esc(e.tipoEquipo || e.equipo)}</span></span><span style="color:var(--accent);font-weight:700">+</span></button>`;
+  const row = e => `<button class="row" data-add="${e.id}"><span class="thumb" aria-hidden="true">${cuerpoSVG(e)}</span><span class="t"><span class="n">${esc(e.nombre)}</span><span class="m">${esc(e.enfoque || "")} · ${esc(e.tipoEquipo || e.equipo)}</span></span><span style="color:var(--accent);font-weight:700">+</span></button>`;
   if (nq) return S.ejercicios.filter(e => normTxt([e.nombre, e.grupo, e.enfoque, e.tipoEquipo, ...(e.maquinas||[]), ...(e.musculosPrincipales||[])].join(" ")).includes(nq)).map(row).join("") || `<div class="notice">Sin resultados.</div>`;
   return GRUPOS.map(g => { const l = S.ejercicios.filter(e => e.grupo === g); return l.length ? `<h4 class="grp-h">${g}</h4>${l.map(row).join("")}` : ""; }).join("");
 }
